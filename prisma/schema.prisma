@@ -15,21 +15,22 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  username  String   @unique
-  email     String   @unique
-  password  String
-  profile   Profile?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          String   @id @default(cuid())
+  username    String   @unique
+  email       String   @unique
+  password    String
+  profile     Profile?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  clerkUserId String?  @unique
 }
 
 model Profile {
-  id        Int    @id @default(autoincrement())
+  id        String @id @default(cuid())
   firstName String
   lastName  String
   bio       String
   picture   String
   user      User   @relation(fields: [userId], references: [id])
-  userId    Int    @unique
+  userId    String @unique
 }
