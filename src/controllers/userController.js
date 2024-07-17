@@ -1,6 +1,7 @@
 const userModel = require("../models/userModel");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+import { Webhook } from "svix";
 
 const getAllUsers = async (req, res) => {
 	try {
@@ -22,9 +23,19 @@ const getUserByUsername = async (req, res) => {
 
 const register = async (req, res) => {
 	try {
-		const { username, email, password } = req.body;
-		const hashedPassword = await bcrypt.hash(password, 10);
-		const user = await userModel.createUser(username, email, hashedPassword);
+		const payload = req.body;
+		const headers = req.headers;
+		const webhook = new Webhook(process.env.SIGNING_SECRET);
+		const event = webhook.verify(payload, headers);
+		const { username, email_addresses, created_at, updated_at, id } =
+			event.data;
+		const user = await userModel.createUser(
+			username,
+			email_addresses,
+			created_at,
+			updated_at,
+			id
+		);
 		res.json(user);
 	} catch (error) {
 		res.json({ error: error.message });
