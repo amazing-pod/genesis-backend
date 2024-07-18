@@ -28,12 +28,12 @@ const register = async (req, res) => {
 	}
 
 	const headers = req.headers;
-	const payload = req.body;
+	const payload = JSON.stringify(req.body);
 	const svix_id = headers["svix-id"];
 	const svix_timestamp = headers["svix-timestamp"];
 	const svix_signature = headers["svix-signature"];
 	if (!svix_id || !svix_timestamp || !svix_signature) {
-		res.json({ error: "No svix headers" });
+		return res.json({ error: "No svix headers" });
 	}
 	const webhook = new Webhook(WEBHOOK_SECRET);
 
@@ -47,7 +47,7 @@ const register = async (req, res) => {
 		});
 	} catch (error) {
 		console.log("Error verifying webhook:", error.message);
-		res.json({
+		return res.json({
 			success: false,
 			message: error.message,
 		});
@@ -61,13 +61,13 @@ const register = async (req, res) => {
 	try {
 		const user = await userModel.createUser(username, id);
 		console.log("User created");
-		res.json({
+		return res.json({
 			success: true,
 			message: "Webhook received",
 			user: user,
 		});
 	} catch (error) {
-		res.json({ error: error.message });
+		return res.json({ error: error.message });
 	}
 };
 
