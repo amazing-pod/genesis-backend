@@ -28,7 +28,7 @@ const register = async (req, res) => {
 	}
 
 	const headers = req.headers;
-	const payload = req.body.toString();
+	const payload = req.body;
 	const svix_id = headers["svix-id"];
 	const svix_timestamp = headers["svix-timestamp"];
 	const svix_signature = headers["svix-signature"];
