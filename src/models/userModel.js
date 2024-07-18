@@ -30,7 +30,7 @@ const createUser = async (username, clerkUserId) => {
 };
 
 const deleteUser = async (clerkUserId) => {
-	return prisma.user.create({
+	return prisma.user.delete({
 		where: {
 			clerkUserId,
 		},
