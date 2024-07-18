@@ -22,8 +22,8 @@ const getUserByUsername = async (req, res) => {
 };
 
 const register = async (req, res) => {
-	const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET;
-	if (!WEBHOOK_SECRET) {
+	const USER_CREATED_WEBHOOK_SECRET = process.env.USER_CREATED_WEBHOOK_SECRET;
+	if (!USER_CREATED_WEBHOOK_SECRET) {
 		throw new Error("You need a WEBHOOK_SECRET in your .env");
 	}
 
@@ -35,7 +35,7 @@ const register = async (req, res) => {
 	if (!svix_id || !svix_timestamp || !svix_signature) {
 		return res.json({ error: "No svix headers" });
 	}
-	const webhook = new Webhook(WEBHOOK_SECRET);
+	const webhook = new Webhook(USER_CREATED_WEBHOOK_SECRET);
 
 	let event;
 
@@ -72,8 +72,8 @@ const register = async (req, res) => {
 };
 
 const deleteUser = async (req, res) => {
-	const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET;
-	if (!WEBHOOK_SECRET) {
+	const USER_DELETED_WEBHOOK_SECRET = process.env.USER_DELETED_WEBHOOK_SECRET;
+	if (!USER_DELETED_WEBHOOK_SECRET) {
 		throw new Error("You need a WEBHOOK_SECRET in your .env");
 	}
 
@@ -85,7 +85,7 @@ const deleteUser = async (req, res) => {
 	if (!svix_id || !svix_timestamp || !svix_signature) {
 		return res.json({ error: "No svix headers" });
 	}
-	const webhook = new Webhook(WEBHOOK_SECRET);
+	const webhook = new Webhook(USER_DELETED_WEBHOOK_SECRET);
 
 	let event;
 
