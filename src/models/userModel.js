@@ -29,4 +29,12 @@ const createUser = async (username, clerkUserId) => {
 	});
 };
 
-module.exports = { getAllUsers, getUserByUsername, createUser };
+const deleteUser = async (clerkUserId) => {
+	return prisma.user.create({
+		where: {
+			clerkUserId,
+		},
+	});
+};
+
+module.exports = { getAllUsers, getUserByUsername, createUser, deleteUser };
