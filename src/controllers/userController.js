@@ -1,5 +1,6 @@
 const userModel = require("../models/userModel");
 const bcrypt = require("bcrypt");
+const e = require("express");
 const jwt = require("jsonwebtoken");
 const { Webhook } = require("svix");
 
@@ -26,9 +27,10 @@ const register = async (req, res) => {
 		const payload = req.body;
 		const headers = req.headers;
 		const webhook = new Webhook(process.env.SIGNING_SECRET);
+		console.log(webhook);
 		const event = webhook.verify(payload, headers);
-		const { username, email_addresses, created_at, updated_at, id } =
-			event.data;
+		console.log(event);
+		const { username, id } = event.data;
 		const user = await userModel.createUser(
 			username,
 			email_addresses,
