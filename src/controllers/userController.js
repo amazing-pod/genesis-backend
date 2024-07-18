@@ -1,6 +1,5 @@
 const userModel = require("../models/userModel");
 const bcrypt = require("bcrypt");
-const e = require("express");
 const jwt = require("jsonwebtoken");
 const { Webhook } = require("svix");
 
@@ -23,17 +22,50 @@ const getUserByUsername = async (req, res) => {
 };
 
 const register = async (req, res) => {
+	const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET;
+	if (!WEBHOOK_SECRET) {
+		throw new Error("You need a WEBHOOK_SECRET in your .env");
+	}
+
+	const headers = req.headers;
+	const payload = req.body;
+	const svix_id = headers["svix-id"];
+	const svix_timestamp = headers["svix-timestamp"];
+	const svix_signature = headers["svix-signature"];
+	if (!svix_id || !svix_timestamp || !svix_signature) {
+		res.json({ error: "No svix headers" });
+	}
+	const webhook = new Webhook(WEBHOOK_SECRET);
+
+	let event;
+
 	try {
-		const payload = req.body.toString();
-		const headers = req.headers;
-		console.log("we are here 1");
-		const webhook = new Webhook(process.env.SIGNING_SECRET);
-		console.log("we are here 2");
-		const event = webhook.verify(payload, headers);
-		console.log("we are here 3");
-		const { username, id } = event.data;
+		event = webhook.verify(payload, {
+			"svix-id": svix_id,
+			"svix-timestamp": svix_timestamp,
+			"svix-signature": svix_signature,
+		});
+	} catch (error) {
+		console.log("Error verifying webhook:", error.message);
+		res.json({
+			success: false,
+			message: error.message,
+		});
+	}
+
+	const { username, id } = event.data;
+	const eventType = event.type;
+	console.log(`Webhook type: ${eventType}`);
+	console.log("Webhook body:", event.data);
+
+	try {
 		const user = await userModel.createUser(username, id);
-		res.json(user);
+		console.log("User created");
+		res.json({
+			success: true,
+			message: "Webhook received",
+			user: user,
+		});
 	} catch (error) {
 		res.json({ error: error.message });
 	}
