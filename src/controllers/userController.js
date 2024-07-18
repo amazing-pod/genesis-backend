@@ -24,21 +24,15 @@ const getUserByUsername = async (req, res) => {
 
 const register = async (req, res) => {
 	try {
-		const payload = req.body;
+		const payload = req.body.toString();
 		const headers = req.headers;
-		console.log("we are here");
+		console.log("we are here 1");
 		const webhook = new Webhook(process.env.SIGNING_SECRET);
-		console.log(webhook);
+		console.log("we are here 2");
 		const event = webhook.verify(payload, headers);
-		console.log(event);
+		console.log("we are here 3");
 		const { username, id } = event.data;
-		const user = await userModel.createUser(
-			username,
-			email_addresses,
-			created_at,
-			updated_at,
-			id
-		);
+		const user = await userModel.createUser(username, id);
 		res.json(user);
 	} catch (error) {
 		res.json({ error: error.message });
