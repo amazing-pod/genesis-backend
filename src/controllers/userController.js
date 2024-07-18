@@ -26,6 +26,7 @@ const register = async (req, res) => {
 	try {
 		const payload = req.body;
 		const headers = req.headers;
+		console.log("we are here");
 		const webhook = new Webhook(process.env.SIGNING_SECRET);
 		console.log(webhook);
 		const event = webhook.verify(payload, headers);
