@@ -9,7 +9,7 @@ const userRoutes = require("./routes/userRoutes");
 app.use(morgan("dev"));
 app.use(cors());
 app.use(express.json());
-// app.use(limiter);
+app.use(limiter);
 
 app.get("/", (req, res) => {
 	res.send("Hello World");

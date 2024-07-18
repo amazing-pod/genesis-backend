@@ -21,16 +21,6 @@ const getUserByUsername = async (req, res) => {
 	}
 };
 
-const signup = async (req, res) => {
-	try {
-		const { username, clerkUserId } = req.body;
-		const user = await userModel.createUser(username, clerkUserId);
-		res.json(user);
-	} catch (error) {
-		res.json({ error: error.message });
-	}
-};
-
 const register = async (req, res) => {
 	const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET;
 	if (!WEBHOOK_SECRET) {
@@ -102,7 +92,6 @@ const logIn = async (req, res) => {
 module.exports = {
 	getAllUsers,
 	getUserByUsername,
-	signup,
 	register,
 	logIn,
 };
