@@ -5,6 +5,7 @@ const cors = require("cors");
 const PORT = 3000;
 const limiter = require("./middleware/rateLimiter");
 const userRoutes = require("./routes/userRoutes");
+const chatRoutes = require("./routes/chatRoutes");
 
 app.use(morgan("dev"));
 app.use(cors());
@@ -16,6 +17,8 @@ app.get("/", (req, res) => {
 });
 
 app.use("/users", userRoutes);
+
+app.use("/api/chat", chatRoutes);
 
 app.listen(PORT, () => {
 	console.log(`Server running at PORT: ${PORT}`);
