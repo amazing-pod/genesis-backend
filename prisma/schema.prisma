@@ -15,20 +15,70 @@ datasource db {
 }
 
 model User {
-  id          String   @id @default(cuid())
-  username    String   @unique
-  profile     Profile?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  clerkUserId String?  @unique
+  id           String   @id @default(cuid())
+  clerkUserId  String?  @unique
+  username     String   @unique
+  profile      Profile?
+  chats        Chat[]
+  threads      Thread[]
+  likedThreads Thread[] @relation("ThreadLikes")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }
 
 model Profile {
-  id        String @id @default(cuid())
+  id        String   @id @default(cuid())
   firstName String
   lastName  String
   bio       String
   picture   String
-  user      User   @relation(fields: [userId], references: [id])
-  userId    String @unique
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Thread {
+  id        String   @id @default(cuid())
+  title     String
+  author    User     @relation(fields: [authorId], references: [id])
+  authorId  String
+  content   String
+  likeCount Int      @default(0)
+  likedBy   User[]   @relation("ThreadLikes")
+  postId    String?
+  post      Thread?  @relation("ThreadReplies", fields: [postId], references: [id])
+  replies   Thread[] @relation("ThreadReplies")
+  reply     Thread?  @relation("ThreadReply")
+  replyToId String?  @unique
+  replyTo   Thread?  @relation("ThreadReply", fields: [replyToId], references: [id])
+  category  Category
+  tags      Tag[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum Category {
+  Announcements
+  Insights
+  Questions
+  Random
+}
+
+model Tag {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  thread    Thread?  @relation(fields: [threadId], references: [id])
+  threadId  String?
+  createdAt DateTime @default(now())
+}
+
+model Chat {
+  id             String   @id @default(cuid())
+  conversationId String   @unique
+  prompt         String
+  response       String
+  user           User     @relation(fields: [userId], references: [id])
+  userId         String   @unique
+  createdAt      DateTime @default(now())
 }
