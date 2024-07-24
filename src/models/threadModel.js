@@ -42,9 +42,12 @@ const createPost = async ({ title, authorId, content, category, tags }) => {
 			content,
 			category,
 			tags: {
-				createMany: {
-					data: tags,
-				},
+				connectOrCreate: tags.map((tag) => {
+					return {
+						where: { name: tag },
+						create: { name: tag },
+					};
+				}),
 			},
 		},
 	});
