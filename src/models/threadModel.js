@@ -44,8 +44,8 @@ const createPost = async ({ title, authorId, content, category, tags }) => {
 			tags: {
 				connectOrCreate: tags.map((tag) => {
 					return {
-						where: { name: tag },
-						create: { name: tag },
+						where: { name: tag.name },
+						create: { name: tag.name },
 					};
 				}),
 			},
