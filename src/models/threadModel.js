@@ -4,7 +4,11 @@ const prisma = new PrismaClient();
 const getAllThreads = async () => {
 	return prisma.thread.findMany({
 		include: {
-			author: true,
+			author: {
+				include: {
+					profile: true,
+				},
+			},
 			likedBy: true,
 			replies: {
 				include: {
@@ -23,7 +27,11 @@ const getAllPosts = async () => {
 			replyTo: null,
 		},
 		include: {
-			author: true,
+			author: {
+				include: {
+					profile: true,
+				},
+			},
 			likedBy: true,
 			replies: {
 				include: {
@@ -42,7 +50,11 @@ const getThreadById = async ({ id }) => {
 			id,
 		},
 		include: {
-			author: true,
+			author: {
+				include: {
+					profile: true,
+				},
+			},
 			likedBy: true,
 			replies: {
 				include: {
