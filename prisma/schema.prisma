@@ -40,20 +40,18 @@ model Profile {
 
 model Thread {
   id        String   @id @default(cuid())
-  title     String
+  title     String?
   author    User     @relation(fields: [authorId], references: [id])
   authorId  String
   content   String
   likeCount Int      @default(0)
   likedBy   User[]   @relation("ThreadLikes")
-  postId    String?
-  post      Thread?  @relation("ThreadReplies", fields: [postId], references: [id])
+  replyToId String?
+  replyTo   Thread?  @relation("ThreadReplies", fields: [replyToId], references: [id])
   replies   Thread[] @relation("ThreadReplies")
-  reply     Thread?  @relation("ThreadReply")
-  replyToId String?  @unique
-  replyTo   Thread?  @relation("ThreadReply", fields: [replyToId], references: [id])
   category  Category
   tags      Tag[]
+  deleted   Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

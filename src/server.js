@@ -5,6 +5,7 @@ const cors = require("cors");
 const PORT = 3000;
 const limiter = require("./middleware/rateLimiter");
 const userRoutes = require("./routes/userRoutes");
+const threadRoutes = require("./routes/threadRoutes");
 const chatRoutes = require("./routes/chatRoutes");
 
 app.use(morgan("dev"));
@@ -17,6 +18,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/users", userRoutes);
+app.use("/threads", threadRoutes);
 
 app.use("/api/chat", chatRoutes);
 
