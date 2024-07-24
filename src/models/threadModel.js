@@ -5,6 +5,7 @@ const getAllThreads = async () => {
 	return prisma.thread.findMany({
 		include: {
 			replies: true,
+			tags: true,
 		},
 	});
 };
@@ -16,6 +17,7 @@ const getAllPosts = async () => {
 		},
 		include: {
 			replies: true,
+			tags: true,
 		},
 	});
 };
@@ -27,6 +29,7 @@ const getThreadById = async ({ id }) => {
 		},
 		include: {
 			replies: true,
+			tags: true,
 		},
 	});
 };
@@ -39,7 +42,9 @@ const createPost = async ({ title, authorId, content, category, tags }) => {
 			content,
 			category,
 			tags: {
-				createMany: tags,
+				createMany: {
+					data: tags,
+				},
 			},
 		},
 	});
