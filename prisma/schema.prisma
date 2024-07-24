@@ -60,6 +60,7 @@ enum Category {
   Announcements
   Insights
   Questions
+  Suggestions
   Random
 }
 
