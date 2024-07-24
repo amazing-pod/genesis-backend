@@ -125,7 +125,7 @@ const deleteThread = async ({ id }) => {
 		},
 	});
 
-	if (thread.replyTo === null) {
+	if (thread.replyToId === null) {
 		return prisma.thread.delete({
 			where: {
 				id,
