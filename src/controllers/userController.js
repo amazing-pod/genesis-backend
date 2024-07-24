@@ -53,15 +53,15 @@ const register = async (req, res) => {
 		});
 	}
 
-	const { username, id, first_name, last_name, profile_image_url } = event.data;
+	const { id, username, first_name, last_name, profile_image_url } = event.data;
 	const eventType = event.type;
 	console.log(`Webhook type: ${eventType}`);
 	console.log("Webhook body:", event.data);
 
 	try {
 		const user = await userModel.createUser(
-			username,
 			id,
+			username,
 			first_name,
 			last_name,
 			profile_image_url

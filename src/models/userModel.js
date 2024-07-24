@@ -20,17 +20,11 @@ const getUserByUsername = async (username) => {
 	});
 };
 
-const createUser = async (
-	username,
-	clerkUserId,
-	firstName,
-	lastName,
-	picture
-) => {
+const createUser = async (id, username, firstName, lastName, picture) => {
 	return prisma.user.create({
 		data: {
+			id,
 			username,
-			clerkUserId,
 			profile: {
 				create: {
 					firstName,
@@ -42,10 +36,10 @@ const createUser = async (
 	});
 };
 
-const deleteUser = async (clerkUserId) => {
+const deleteUser = async (id) => {
 	return prisma.user.delete({
 		where: {
-			clerkUserId,
+			id,
 		},
 	});
 };
