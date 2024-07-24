@@ -17,7 +17,7 @@ router.get("/:id", getThreadById);
 router.post("/posts", createPost);
 router.post("/", createThread);
 router.put("/:threadId/like/:userId", likeThread);
-router.put("/:threadId/like/:userId", unlikeThread);
+router.put("/:threadId/unlike/:userId", unlikeThread);
 router.delete("/:id", deleteThread);
 
 module.exports = router;

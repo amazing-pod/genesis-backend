@@ -4,7 +4,13 @@ const prisma = new PrismaClient();
 const getAllThreads = async () => {
 	return prisma.thread.findMany({
 		include: {
-			replies: true,
+			likedBy: true,
+			replies: {
+				include: {
+					likedBy: true,
+					replies: true,
+				},
+			},
 			tags: true,
 		},
 	});
@@ -16,7 +22,13 @@ const getAllPosts = async () => {
 			replyTo: null,
 		},
 		include: {
-			replies: true,
+			likedBy: true,
+			replies: {
+				include: {
+					likedBy: true,
+					replies: true,
+				},
+			},
 			tags: true,
 		},
 	});
@@ -28,7 +40,13 @@ const getThreadById = async ({ id }) => {
 			id,
 		},
 		include: {
-			replies: true,
+			likedBy: true,
+			replies: {
+				include: {
+					likedBy: true,
+					replies: true,
+				},
+			},
 			tags: true,
 		},
 	});
@@ -51,17 +69,6 @@ const createPost = async ({ title, authorId, content, category, tags }) => {
 			},
 		},
 	});
-
-	// await tags.forEach((tag) => {
-	// 	prisma.tag.create({
-	// 		data: {
-	// 			name: tag.name,
-	// 			threadId: thread.id,
-	// 		},
-	// 	});
-	// });
-
-	// return thread;
 };
 
 const createThread = async ({ authorId, content, replyToId }) => {
@@ -72,7 +79,7 @@ const createThread = async ({ authorId, content, replyToId }) => {
 	});
 
 	if (!thread) {
-		throw new Error("Thread not found");
+		throw new Error(`Thread [${replyToId}] not found to reply to`);
 	}
 
 	return prisma.thread.create({
@@ -87,6 +94,19 @@ const createThread = async ({ authorId, content, replyToId }) => {
 };
 
 const likeThread = async ({ threadId, userId }) => {
+	const thread = await prisma.thread.findUnique({
+		where: {
+			id: threadId,
+		},
+		include: {
+			likedBy: true,
+		},
+	});
+
+	if (thread.likedBy.find((user) => user.id === userId)) {
+		throw new Error(`User [${userId}] already liked thread [${threadId}]`);
+	}
+
 	return prisma.thread.update({
 		where: {
 			id: threadId,
@@ -103,6 +123,19 @@ const likeThread = async ({ threadId, userId }) => {
 };
 
 const unlikeThread = async ({ threadId, userId }) => {
+	const thread = await prisma.thread.findUnique({
+		where: {
+			id: threadId,
+		},
+		include: {
+			likedBy: true,
+		},
+	});
+
+	if (!thread.likedBy.find((user) => user.id === userId)) {
+		throw new Error(`User [${userId}] has not liked thread [${threadId}]`);
+	}
+
 	return prisma.thread.update({
 		where: {
 			id: threadId,
