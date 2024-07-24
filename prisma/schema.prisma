@@ -50,7 +50,7 @@ model Thread {
   replyTo   Thread?  @relation("ThreadReplies", fields: [replyToId], references: [id])
   replies   Thread[] @relation("ThreadReplies")
   category  Category
-  tags      Tag[]
+  tags      Tag[]    @relation("ThreadTags")
   deleted   Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -67,8 +67,7 @@ enum Category {
 model Tag {
   id        String   @id @default(cuid())
   name      String   @unique
-  thread    Thread?  @relation(fields: [threadId], references: [id])
-  threadId  String?
+  threads   Thread[] @relation("ThreadTags")
   createdAt DateTime @default(now())
 }
 
