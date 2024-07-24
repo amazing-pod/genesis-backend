@@ -53,13 +53,19 @@ const register = async (req, res) => {
 		});
 	}
 
-	const { username, id } = event.data;
+	const { username, id, first_name, last_name, profile_image_url } = event.data;
 	const eventType = event.type;
 	console.log(`Webhook type: ${eventType}`);
 	console.log("Webhook body:", event.data);
 
 	try {
-		const user = await userModel.createUser(username, id);
+		const user = await userModel.createUser(
+			username,
+			id,
+			first_name,
+			last_name,
+			profile_image_url
+		);
 		console.log("User created");
 		return res.json({
 			success: true,

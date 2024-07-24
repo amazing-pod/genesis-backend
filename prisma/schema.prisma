@@ -30,9 +30,9 @@ model Profile {
   id        String   @id @default(cuid())
   firstName String
   lastName  String
-  bio       String
+  bio       String?
   picture   String
-  user      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

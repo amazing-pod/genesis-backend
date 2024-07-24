@@ -20,11 +20,24 @@ const getUserByUsername = async (username) => {
 	});
 };
 
-const createUser = async (username, clerkUserId) => {
+const createUser = async (
+	username,
+	clerkUserId,
+	firstName,
+	lastName,
+	picture
+) => {
 	return prisma.user.create({
 		data: {
 			username,
 			clerkUserId,
+			profile: {
+				create: {
+					firstName,
+					lastName,
+					picture,
+				},
+			},
 		},
 	});
 };
