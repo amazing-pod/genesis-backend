@@ -2,7 +2,13 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
 const getAllProjects = async () => {
-	return prisma.project.findMany();
+	return prisma.project.findMany({
+		include: {
+			owner: true,
+			collaborators: true,
+			ideas: true,
+		},
+	});
 };
 
 // const getAccessProjects = async (userId) => {
@@ -24,6 +30,11 @@ const getProjectById = ({ id }) => {
 	return prisma.project.findUnique({
 		where: {
 			id,
+		},
+		include: {
+			owner: true,
+			collaborators: true,
+			ideas: true,
 		},
 	});
 };
