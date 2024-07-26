@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE "User" ALTER COLUMN "email" DROP DEFAULT,
+ALTER COLUMN "email" SET DATA TYPE TEXT;
+DROP SEQUENCE "User_email_seq";

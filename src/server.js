@@ -7,6 +7,7 @@ const limiter = require("./middleware/rateLimiter");
 const userRoutes = require("./routes/userRoutes");
 const threadRoutes = require("./routes/threadRoutes");
 const chatRoutes = require("./routes/chatRoutes");
+const novuRoutes = require("./routes/novuRoutes");
 
 app.use(morgan("dev"));
 app.use(cors());
@@ -21,6 +22,7 @@ app.use("/users", userRoutes);
 app.use("/threads", threadRoutes);
 
 app.use("/api/chat", chatRoutes);
+app.use("/api/novu", novuRoutes);
 
 app.listen(PORT, () => {
 	console.log(`Server running at PORT: ${PORT}`);

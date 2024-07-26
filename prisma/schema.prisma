@@ -17,6 +17,7 @@ datasource db {
 model User {
   id           String   @id
   username     String   @unique
+  email        String   @unique 
   profile      Profile?
   chats        Chat[]
   threads      Thread[]

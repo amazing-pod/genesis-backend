@@ -23,6 +23,7 @@ const getUserByUsername = async (username) => {
 const createUser = async (
 	username,
 	clerkUserId,
+	email,
 	firstName,
 	lastName,
 	picture
@@ -31,6 +32,7 @@ const createUser = async (
 		data: {
 			username,
 			clerkUserId,
+			email,
 			profile: {
 				create: {
 					firstName,

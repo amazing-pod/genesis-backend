@@ -54,6 +54,7 @@ const register = async (req, res) => {
 	}
 
 	const { username, id, first_name, last_name, profile_image_url } = event.data;
+	const email = event.data.email_addresses[0].email_address;
 	const eventType = event.type;
 	console.log(`Webhook type: ${eventType}`);
 	console.log("Webhook body:", event.data);
@@ -62,6 +63,7 @@ const register = async (req, res) => {
 		const user = await userModel.createUser(
 			username,
 			id,
+			email,
 			first_name,
 			last_name,
 			profile_image_url
