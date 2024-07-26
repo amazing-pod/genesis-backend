@@ -1,20 +1,19 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
-const getUserChatHistory = async (conversationId, userId) => {
+const getUserChatHistory = async (conversationId) => {
 	return await prisma.chat.findMany({
-		where: { conversationId, userId },
+		where: { conversationId },
 		orderBy: { createdAt: "asc" },
 	});
 };
 
-const saveChatMessage = async (conversationId, prompt, response, userId) => {
+const saveChatMessage = async (conversationId, prompt, response) => {
 	await prisma.chat.create({
 		data: {
 			conversationId,
 			prompt,
 			response,
-			userId,
 		},
 	});
 };

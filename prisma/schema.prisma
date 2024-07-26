@@ -19,7 +19,6 @@ model User {
   username        String    @unique
   email           String    @unique
   profile         Profile?
-  chats           Chat[]
   threads         Thread[]
   likedThreads    Thread[]  @relation("ThreadLikes")
   ownedProjects   Project[]
@@ -42,6 +41,7 @@ model Profile {
 
 model Project {
   id            String   @id @default(cuid())
+  title         String
   owner         User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   ownerId       String
   collaborators User[]   @relation("ProjectInvite")
@@ -51,40 +51,51 @@ model Project {
 }
 
 model Idea {
-  id          String   @id @default(cuid())
-  project     Project  @relation(fields: [projectId], references: [id])
-  projectId   String
-  title       String
-  description String
-  issues      String[]
-  features    String[]
-  tags        Tag[]    @relation("IdeaTags")
-  impact      Int
-  feasibility Int
-  difficulty  Int
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id             String       @id @default(cuid())
+  project        Project      @relation(fields: [projectId], references: [id])
+  projectId      String
+  title          String
+  description    String
+  category       IdeaCategory
+  issues         String[]
+  features       String[]
+  tags           Tag[]        @relation("IdeaTags")
+  impact         Int          @default(0)
+  feasibility    Int          @default(0)
+  difficulty     Int          @default(0)
+  bookmarked     Boolean      @default(false)
+  conversationId String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+}
+
+enum IdeaCategory {
+  Education
+  Environment
+  Healthcare
+  News
+  Technology
 }
 
 model Thread {
-  id        String   @id @default(cuid())
+  id        String        @id @default(cuid())
   title     String?
-  author    User     @relation(fields: [authorId], references: [id])
+  author    User          @relation(fields: [authorId], references: [id])
   authorId  String
   content   String
-  likeCount Int      @default(0)
-  likedBy   User[]   @relation("ThreadLikes")
+  likeCount Int           @default(0)
+  likedBy   User[]        @relation("ThreadLikes")
   replyToId String?
-  replyTo   Thread?  @relation("ThreadReplies", fields: [replyToId], references: [id])
-  replies   Thread[] @relation("ThreadReplies")
-  category  Category
-  tags      Tag[]    @relation("ThreadTags")
-  deleted   Boolean  @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  replyTo   Thread?       @relation("ThreadReplies", fields: [replyToId], references: [id])
+  replies   Thread[]      @relation("ThreadReplies")
+  category  ForumCategory
+  tags      Tag[]         @relation("ThreadTags")
+  deleted   Boolean       @default(false)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
 }
 
-enum Category {
+enum ForumCategory {
   Announcements
   Insights
   Questions
@@ -102,10 +113,8 @@ model Tag {
 
 model Chat {
   id             String   @id @default(cuid())
-  conversationId String   @unique
+  conversationId String
   prompt         String
   response       String
-  user           User     @relation(fields: [userId], references: [id])
-  userId         String   @unique
   createdAt      DateTime @default(now())
 }

@@ -19,7 +19,11 @@ const chatHandler = async (req, res) => {
 	// try to connect to openAI API
 	try {
 		let messages = [
-			{ role: "system", content: "You are a helpful assistant." },
+			{
+				role: "system",
+				content:
+					"You are a helpful assistant with expertise in generating technical project ideas and features based on context. Provide detailed suggestions and features for various technical projects when asked.",
+			},
 		];
 
 		if (conversationId) {
@@ -36,7 +40,7 @@ const chatHandler = async (req, res) => {
 		// interact with OpenAI API
 		const completion = await openai.chat.completions.create({
 			messages: messages,
-			model: "gpt-4o-mini-2024-07-18",
+			model: "gpt-3.5-turbo",
 		});
 
 		// process the response - specific to OpenAI Api resoponse
