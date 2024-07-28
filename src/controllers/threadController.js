@@ -18,6 +18,15 @@ const getAllPosts = async (req, res) => {
 	}
 };
 
+const getRepliesByPost = async (req, res) => {
+	try {
+		const replies = await threadModel.getRepliesByPost(req.params);
+		res.json(replies);
+	} catch (error) {
+		res.json({ error: error.message });
+	}
+};
+
 const getThreadById = async (req, res) => {
 	try {
 		const thread = await threadModel.getThreadById(req.params);
@@ -75,6 +84,7 @@ const deleteThread = async (req, res) => {
 module.exports = {
 	getAllThreads,
 	getAllPosts,
+	getRepliesByPost,
 	getThreadById,
 	createPost,
 	createThread,

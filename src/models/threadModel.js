@@ -44,8 +44,16 @@ const getAllPosts = async () => {
 	});
 };
 
-const getThreadById = async ({ id }) => {
+const getRepliesByThread = ({ id }) => {
 	return prisma.thread.findMany({
+		where: {
+			replyToId: id,
+		},
+	});
+};
+
+const getThreadById = async ({ id }) => {
+	return prisma.thread.findUnique({
 		where: {
 			id,
 		},
@@ -58,6 +66,11 @@ const getThreadById = async ({ id }) => {
 			likedBy: true,
 			replies: {
 				include: {
+					author: {
+						include: {
+							profile: true,
+						},
+					},
 					likedBy: true,
 					replies: true,
 				},
@@ -194,6 +207,7 @@ const deleteThread = async ({ id }) => {
 module.exports = {
 	getAllThreads,
 	getAllPosts,
+	getRepliesByThread,
 	getThreadById,
 	createPost,
 	createThread,

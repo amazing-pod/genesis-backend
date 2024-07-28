@@ -3,6 +3,7 @@ const router = express.Router();
 const {
 	getAllThreads,
 	getAllPosts,
+	getRepliesByPost,
 	getThreadById,
 	createPost,
 	createThread,
@@ -13,6 +14,7 @@ const {
 
 router.get("/", getAllThreads);
 router.get("/posts", getAllPosts);
+router.get("/:id/replies", getRepliesByPost);
 router.get("/:id", getThreadById);
 router.post("/posts", createPost);
 router.post("/", createThread);
