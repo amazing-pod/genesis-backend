@@ -118,6 +118,26 @@ const createThread = async ({ authorId, content, replyToId }) => {
 			category: thread.category,
 			tags: thread.tags,
 		},
+		include: {
+			author: {
+				include: {
+					profile: true,
+				},
+			},
+			likedBy: true,
+			replies: {
+				include: {
+					author: {
+						include: {
+							profile: true,
+						},
+					},
+					likedBy: true,
+					replies: true,
+				},
+			},
+			tags: true,
+		},
 	});
 };
 
