@@ -15,21 +15,106 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  username  String   @unique
-  email     String   @unique
-  password  String
-  profile   Profile?
+  id              String    @id
+  username        String    @unique
+  email           String    @unique
+  profile         Profile?
+  threads         Thread[]
+  likedThreads    Thread[]  @relation("ThreadLikes")
+  ownedProjects   Project[]
+  invitedProjects Project[] @relation("ProjectInvite")
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+model Profile {
+  id        String   @id @default(cuid())
+  firstName String
+  lastName  String
+  bio       String?
+  picture   String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-model Profile {
-  id        Int    @id @default(autoincrement())
-  firstName String
-  lastName  String
-  bio       String
-  picture   String
-  user      User   @relation(fields: [userId], references: [id])
-  userId    Int    @unique
+model Project {
+  id            String   @id @default(cuid())
+  title         String
+  owner         User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId       String
+  collaborators User[]   @relation("ProjectInvite")
+  ideas         Idea[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Idea {
+  id             String       @id @default(cuid())
+  project        Project      @relation(fields: [projectId], references: [id])
+  projectId      String
+  title          String
+  description    String
+  category       IdeaCategory
+  issues         String[]
+  features       String[]
+  tags           Tag[]        @relation("IdeaTags")
+  impact         Int          @default(0)
+  feasibility    Int          @default(0)
+  difficulty     Int          @default(0)
+  bookmarked     Boolean      @default(false)
+  conversationId String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+}
+
+enum IdeaCategory {
+  Education
+  Environment
+  Healthcare
+  News
+  Technology
+}
+
+model Thread {
+  id        String        @id @default(cuid())
+  title     String?
+  author    User          @relation(fields: [authorId], references: [id])
+  authorId  String
+  content   String
+  likeCount Int           @default(0)
+  likedBy   User[]        @relation("ThreadLikes")
+  replyToId String?
+  replyTo   Thread?       @relation("ThreadReplies", fields: [replyToId], references: [id])
+  replies   Thread[]      @relation("ThreadReplies")
+  category  ForumCategory
+  tags      Tag[]         @relation("ThreadTags")
+  deleted   Boolean       @default(false)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+}
+
+enum ForumCategory {
+  Announcements
+  Insights
+  Questions
+  Suggestions
+  Random
+}
+
+model Tag {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  threads   Thread[] @relation("ThreadTags")
+  ideas     Idea[]   @relation("IdeaTags")
+  createdAt DateTime @default(now())
+}
+
+model Chat {
+  id             String   @id @default(cuid())
+  conversationId String
+  prompt         String
+  response       String
+  createdAt      DateTime @default(now())
 }

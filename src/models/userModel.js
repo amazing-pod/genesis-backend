@@ -20,14 +20,36 @@ const getUserByUsername = async (username) => {
 	});
 };
 
-const createUser = async (username, email, password) => {
+const createUser = async (
+	id,
+	username,
+	email,
+	firstName,
+	lastName,
+	picture
+) => {
 	return prisma.user.create({
 		data: {
+			id,
 			username,
 			email,
-			password,
+			profile: {
+				create: {
+					firstName,
+					lastName,
+					picture,
+				},
+			},
 		},
 	});
 };
 
-module.exports = { getAllUsers, getUserByUsername, createUser };
+const deleteUser = async (id) => {
+	return prisma.user.delete({
+		where: {
+			id,
+		},
+	});
+};
+
+module.exports = { getAllUsers, getUserByUsername, createUser, deleteUser };

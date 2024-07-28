@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE "Idea" ALTER COLUMN "impact" SET DEFAULT 0,
+ALTER COLUMN "feasibility" SET DEFAULT 0,
+ALTER COLUMN "difficulty" SET DEFAULT 0;
