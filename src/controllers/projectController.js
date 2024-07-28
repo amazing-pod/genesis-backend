@@ -74,12 +74,24 @@ const deleteProject = async (req, res) => {
 
 const deleteIdea = async (req, res) => {
 	try {
-		const idea = await projectModel.createIdea(req.params);
+		const idea = await projectModel.deleteIdea(req.params);
 		res.json(idea);
 	} catch (error) {
 		res.json({ error: error.message });
 	}
 };
+
+const getBookmarkedIdeas = async (req, res) => {
+    try {
+        const userId = req.user.id;
+		console.log("USER ID:", req.user.id);
+        const bookmarkedIdeas = await projectModel.getBookmarkedIdeas(userId);
+        res.json(bookmarkedIdeas);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
 
 module.exports = {
 	getAllProjects,
@@ -91,4 +103,5 @@ module.exports = {
 	updateIdea,
 	deleteProject,
 	deleteIdea,
+	getBookmarkedIdeas,
 };

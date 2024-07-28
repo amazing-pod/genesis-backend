@@ -9,12 +9,15 @@ const {
 	addCollaborator,
 	deleteProject,
 	deleteIdea,
+	getBookmarkedIdeas,
+	
 } = require("../controllers/projectController");
 const { updateIdea } = require("../models/projectModel");
 
 router.get("/", getAllProjects);
 router.get("/:id", getProjectById);
 router.get("/:id/ideas/:ideaId", getIdeaById);
+router.get("/:id/ideas/bookmarkedIdeas", getBookmarkedIdeas);
 router.post("/", createProject);
 router.post("/:id", createIdea);
 router.put("/:id/ideas/:ideaId", updateIdea);

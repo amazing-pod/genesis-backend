@@ -11,6 +11,16 @@ const getAllProjects = async () => {
 	});
 };
 
+const getBookmarkedIdeas = async (userId) => {
+    return prisma.idea.findMany({
+        where: {
+            bookmarked: true,
+            // Add more filters if necessary, e.g., userId
+        },
+    });
+};
+
+
 // const getAccessProjects = async (userId) => {
 // 	return prisma.project.findMany({
 // 		where: {
@@ -178,6 +188,7 @@ const deleteProject = async ({ id }) => {
 	});
 };
 
+
 module.exports = {
 	getAllProjects,
 	getProjectById,
@@ -188,4 +199,5 @@ module.exports = {
 	updateIdea,
 	deleteIdea,
 	deleteProject,
+	getBookmarkedIdeas,
 };
