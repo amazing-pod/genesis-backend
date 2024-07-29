@@ -118,8 +118,9 @@ const getMostFeasibleIdea = async (req, res) => {
 }
 
 const getEasiestIdea = async (req, res) => {
+	const userId = req.params.id;
 	try {
-		const idea = await projectModel.getEasiestIdea(req.params);
+		const idea = await projectModel.getEasiestIdea(userId);
 		res.json(idea);
 	} catch (error) {
 		res.json({ error: error.message });
@@ -127,8 +128,9 @@ const getEasiestIdea = async (req, res) => {
 }
 
 const getMostDifficultIdea = async (req, res) => {
+	const userId = req.params.id;
 	try {
-		const idea = await projectModel.getMostDifficultIdea(req.params);
+		const idea = await projectModel.getMostDifficultIdea(userId);
 		res.json(idea);
 	} catch (error) {
 		res.json({ error: error.message });
@@ -136,8 +138,9 @@ const getMostDifficultIdea = async (req, res) => {
 }
 
 const getMostImpactfulIdea = async (req, res) => {
+	const userId = req.params.id;
 	try {
-		const idea = await projectModel.getMostImpactfulIdea(req.params);
+		const idea = await projectModel.getMostImpactfulIdea(userId);
 		res.json(idea);
 	} catch (error) {
 		res.json({ error: error.message });

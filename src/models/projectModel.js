@@ -232,30 +232,85 @@ const getMostFeasibleIdea = async (userId) => {
 };
 
 
-
 const getEasiestIdea = async ( userId ) => {
-	return prisma.idea.findUnique({
-		orderBy: {
-			difficulty,
-		},
-	});
+	const projects = await prisma.project.findMany({
+        where: {
+            ownerId: userId,
+        },
+        include: {
+            ideas: true,
+        },
+    });
+
+    if (projects.length === 0) {
+        return [];
+    }
+
+	// Get all ideas. flatMap() takes all project ideas and turns it into an array.
+	const ideas = projects.flatMap(project => project.ideas);
+
+    // Sort ideas by feasibility (ascending order)
+    ideas.sort((a, b) => b.difficulty - a.difficulty);
+	
+    // // Return the most feasible idea
+	if (ideas) {
+		return ideas[ideas.length - 1];
+	}
+	return null;
 };
 
 const getMostDifficultIdea = async ( userId ) => {
-	// Should return last item
-	return prisma.idea.findFirst({
-		orderBy: {
-			difficulty,
-		},
-	});
+	const projects = await prisma.project.findMany({
+        where: {
+            ownerId: userId,
+        },
+        include: {
+            ideas: true,
+        },
+    });
+
+    if (projects.length === 0) {
+        return [];
+    }
+
+	// Get all ideas. flatMap() takes all project ideas and turns it into an array.
+	const ideas = projects.flatMap(project => project.ideas);
+
+    // Sort ideas by feasibility (descending order)
+    ideas.sort((a, b) => b.difficulty - a.difficulty);
+
+    // Return the most feasible idea
+	if (ideas) {
+		return ideas[0];
+	}
+	return null;
 };
 
 const getMostImpactfulIdea = async ( userId ) => {
-	return prisma.idea.findFirst({
-		orderBy: {
-			impact,
-		},
-	});
+	const projects = await prisma.project.findMany({
+        where: {
+            ownerId: userId,
+        },
+        include: {
+            ideas: true,
+        },
+    });
+
+    if (projects.length === 0) {
+        return [];
+    }
+
+	// Get all ideas. flatMap() takes all project ideas and turns it into an array.
+	const ideas = projects.flatMap(project => project.ideas);
+
+    // Sort ideas by feasibility (descending order)
+    ideas.sort((a, b) => b.impact - a.impact);
+
+    // Return the most feasible idea
+	if (ideas) {
+		return ideas[0];
+	}
+	return null;
 };
 
 module.exports = {
