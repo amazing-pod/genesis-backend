@@ -139,7 +139,6 @@ const getMostImpactfulIdea = async (req, res) => {
 const getBookmarkedIdeas = async (req, res) => {
     try {
         const userId = req.params.id;
-		// console.log("USER ID:", req.user.id);
         const bookmarkedIdeas = await projectModel.getBookmarkedIdeas(userId);
         res.json(bookmarkedIdeas);
     } catch (error) {
