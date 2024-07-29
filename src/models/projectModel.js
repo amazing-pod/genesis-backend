@@ -30,7 +30,6 @@ const getBookmarkedIdeas = async (userId) => {
     return prisma.idea.findMany({
         where: {
             bookmarked: true,
-            // Add more filters if necessary, e.g., userId
         },
     });
 };
@@ -203,6 +202,61 @@ const deleteProject = async ({ id }) => {
 	});
 };
 
+// Home Routes
+const getMostFeasibleIdea = async (userId) => {
+    // Fetch projects with their ideas for the given user
+    const projects = await prisma.project.findMany({
+        where: {
+            ownerId: userId,
+        },
+        include: {
+            ideas: true,
+        },
+    });
+
+    if (projects.length === 0) {
+        return [];
+    }
+
+	// Get all ideas. flatMap() takes all project ideas and turns it into an array.
+	const ideas = projects.flatMap(project => project.ideas);
+
+    // Sort ideas by feasibility (descending order)
+    ideas.sort((a, b) => b.feasibility - a.feasibility);
+
+    // // Return the most feasible idea
+	if (ideas) {
+		return ideas[0];
+	}
+	return null;
+};
+
+
+
+const getEasiestIdea = async ( userId ) => {
+	return prisma.idea.findUnique({
+		orderBy: {
+			difficulty,
+		},
+	});
+};
+
+const getMostDifficultIdea = async ( userId ) => {
+	// Should return last item
+	return prisma.idea.findFirst({
+		orderBy: {
+			difficulty,
+		},
+	});
+};
+
+const getMostImpactfulIdea = async ( userId ) => {
+	return prisma.idea.findFirst({
+		orderBy: {
+			impact,
+		},
+	});
+};
 
 module.exports = {
 	getAllProjects,
@@ -216,4 +270,8 @@ module.exports = {
 	deleteProject,
 	getBookmarkedIdeas,
 	getProjectsByUserId,
+	getMostFeasibleIdea,
+	getEasiestIdea,
+	getMostDifficultIdea,
+	getMostImpactfulIdea,
 };

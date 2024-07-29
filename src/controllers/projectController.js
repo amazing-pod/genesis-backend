@@ -105,6 +105,46 @@ const getBookmarkedIdeas = async (req, res) => {
     }
 };
 
+// Home Routes:
+const getMostFeasibleIdea = async (req, res) => {
+	const userId = req.params.id;
+	try {
+		const idea = await projectModel.getMostFeasibleIdea(userId);
+		console.log(idea);
+		res.json(idea);
+	} catch (error) {
+		res.json({ error: error.message });
+	}
+}
+
+const getEasiestIdea = async (req, res) => {
+	try {
+		const idea = await projectModel.getEasiestIdea(req.params);
+		res.json(idea);
+	} catch (error) {
+		res.json({ error: error.message });
+	}
+}
+
+const getMostDifficultIdea = async (req, res) => {
+	try {
+		const idea = await projectModel.getMostDifficultIdea(req.params);
+		res.json(idea);
+	} catch (error) {
+		res.json({ error: error.message });
+	}
+}
+
+const getMostImpactfulIdea = async (req, res) => {
+	try {
+		const idea = await projectModel.getMostImpactfulIdea(req.params);
+		res.json(idea);
+	} catch (error) {
+		res.json({ error: error.message });
+	}
+}
+
+
 
 module.exports = {
 	getAllProjects,
@@ -118,4 +158,8 @@ module.exports = {
 	deleteIdea,
 	getBookmarkedIdeas,
 	getProjectsByUserId,
+	getMostFeasibleIdea,
+	getEasiestIdea,
+	getMostDifficultIdea,
+	getMostImpactfulIdea,
 };
