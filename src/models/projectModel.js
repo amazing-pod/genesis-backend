@@ -11,6 +11,21 @@ const getAllProjects = async () => {
 	});
 };
 
+// Test function
+const getProjectsByUserId = async (userId) => {
+    return prisma.project.findMany({
+        where: {
+            ownerId: userId,
+        },
+        include: {
+            owner: true,
+            collaborators: true,
+            ideas: true,
+        },
+    });
+};
+
+
 const getBookmarkedIdeas = async (userId) => {
     return prisma.idea.findMany({
         where: {
@@ -200,4 +215,5 @@ module.exports = {
 	deleteIdea,
 	deleteProject,
 	getBookmarkedIdeas,
+	getProjectsByUserId,
 };

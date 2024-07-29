@@ -10,6 +10,7 @@ const {
 	deleteProject,
 	deleteIdea,
 	getBookmarkedIdeas,
+	getProjectsByUserId,
 	
 } = require("../controllers/projectController");
 const { updateIdea } = require("../models/projectModel");
@@ -24,5 +25,8 @@ router.put("/:id/ideas/:ideaId", updateIdea);
 router.put("/collaborators", addCollaborator);
 router.delete("/:id", deleteProject);
 router.delete("/:id/ideas/:ideaId", deleteIdea);
+
+// Get ideas by user
+router.get("/project/:id", getProjectsByUserId);
 
 module.exports = router;

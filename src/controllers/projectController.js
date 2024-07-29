@@ -9,8 +9,21 @@ const getAllProjects = async (req, res) => {
 	}
 };
 
+// New route to get projects by a specific user
+const getProjectsByUserId = async (req, res) => {
+    try {
+        const userId = req.params.userId;
+        console.log("Extracted userId:", userId);
+        const projects = await projectModel.getProjectsByUserId(userId);
+        res.json(projects);
+    } catch (error) {
+        res.json({ error: error.message });
+    }
+};
+
 const getProjectById = async (req, res) => {
 	try {
+		console.log("ID", req.params);
 		const project = await projectModel.getProjectById(req.params);
 		res.json(project);
 	} catch (error) {
@@ -104,4 +117,5 @@ module.exports = {
 	deleteProject,
 	deleteIdea,
 	getBookmarkedIdeas,
+	getProjectsByUserId,
 };
