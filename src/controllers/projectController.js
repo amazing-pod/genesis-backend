@@ -94,17 +94,6 @@ const deleteIdea = async (req, res) => {
 	}
 };
 
-const getBookmarkedIdeas = async (req, res) => {
-    try {
-        const userId = req.user.id;
-		console.log("USER ID:", req.user.id);
-        const bookmarkedIdeas = await projectModel.getBookmarkedIdeas(userId);
-        res.json(bookmarkedIdeas);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-};
-
 // Home Routes:
 const getMostFeasibleIdea = async (req, res) => {
 	const userId = req.params.id;
@@ -147,6 +136,16 @@ const getMostImpactfulIdea = async (req, res) => {
 	}
 }
 
+const getBookmarkedIdeas = async (req, res) => {
+    try {
+        const userId = req.params.id;
+		// console.log("USER ID:", req.user.id);
+        const bookmarkedIdeas = await projectModel.getBookmarkedIdeas(userId);
+        res.json(bookmarkedIdeas);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
 
 
 module.exports = {

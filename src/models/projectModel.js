@@ -25,16 +25,6 @@ const getProjectsByUserId = async (userId) => {
     });
 };
 
-
-const getBookmarkedIdeas = async (userId) => {
-    return prisma.idea.findMany({
-        where: {
-            bookmarked: true,
-        },
-    });
-};
-
-
 // const getAccessProjects = async (userId) => {
 // 	return prisma.project.findMany({
 // 		where: {
@@ -312,6 +302,48 @@ const getMostImpactfulIdea = async ( userId ) => {
 	}
 	return null;
 };
+
+// const getBookmarkedIdeas = async (userId) => {
+//     return prisma.idea.findMany({
+//         where: {
+//             bookmarked: true,
+//         },
+//     });
+// };
+
+const getBookmarkedIdeas = async (userId) => {
+	const projects = await prisma.project.findMany({
+        where: {
+            ownerId: userId,
+        },
+        include: {
+            ideas: true,
+        },
+    });
+
+    if (projects.length === 0) {
+        return [];
+    }
+
+	// Get all ideas. flatMap() takes all project ideas and turns it into an array.
+	let ideas = projects.flatMap(project => project.ideas);
+
+	if (ideas.length === 0) {
+		return [];
+	}
+
+    // Sort ideas by feasibility (descending order)
+    ideas = ideas.filter((a) => a.bookmarked === true);
+	console.log("ideas filtered:", ideas);
+
+    // Return the most feasible idea
+	return ideas;
+
+
+
+};
+
+
 
 module.exports = {
 	getAllProjects,

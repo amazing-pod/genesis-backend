@@ -22,7 +22,6 @@ const { updateIdea } = require("../models/projectModel");
 router.get("/", getAllProjects);
 router.get("/:id", getProjectById);
 router.get("/:id/ideas/:ideaId", getIdeaById);
-router.get("/:id/ideas/bookmarkedIdeas", getBookmarkedIdeas);
 router.post("/", createProject);
 router.post("/:id", createIdea);
 router.put("/:id/ideas/:ideaId", updateIdea);
@@ -38,6 +37,7 @@ router.get("/project/:id/mostFeasible", getMostFeasibleIdea);
 router.get("/project/:id/easiestIdea", getEasiestIdea);
 router.get("/project/:id/mostDifficult", getMostDifficultIdea);
 router.get("/project/:id/mostImpactful", getMostImpactfulIdea);
+router.get("/project/:id/bookmarkedIdeas", getBookmarkedIdeas);
 
 
 module.exports = router;
