@@ -206,32 +206,38 @@ const deleteThread = async ({ id }) => {
 
 // Home-Specific Routes
 const getMostRecentPosts = async () => {
-	return prisma.thread.findMany({
-		where: {
-			replyToId: null, // Ensure we're only getting top-level posts
-		},
-		include: {
-			author: {
-				include: {
-					profile: true,
-				},
-			},
-			likedBy: true,
-			replies: {
-				include: {
-					likedBy: true,
-					replies: true,
-				},
-			},
-			tags: true,
-		},
-		orderBy: {
-			createdAt: 'desc', // Sort by creation date in descending order
-		},
-		take: 2, // Limit the result to 2 posts
-	});
-};
+    try {
+        const recentThreads = await prisma.thread.findMany({
+            where: {
+                replyTo: null, // Only consider top-level threads
+            },
+            orderBy: {
+                createdAt: 'desc', // Order by creation date in descending order
+            },
+            take: 2, // Limit the result to 2 threads
+            include: {
+                author: {
+                    include: {
+                        profile: true,
+                    },
+                },
+                likedBy: true,
+                replies: {
+                    include: {
+                        likedBy: true,
+                        replies: true,
+                    },
+                },
+                tags: true,
+            },
+        });
 
+        return recentThreads;
+    } catch (error) {
+        console.error("Error fetching recent threads:", error);
+        throw new Error("Unable to fetch recent threads.");
+    }
+};
 
 
 
