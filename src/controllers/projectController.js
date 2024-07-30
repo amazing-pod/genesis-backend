@@ -1,4 +1,5 @@
 const projectModel = require("../models/projectModel");
+const threadModel = require("../models/threadModel");
 
 const getAllProjects = async (req, res) => {
 	try {
@@ -146,6 +147,34 @@ const getBookmarkedIdeas = async (req, res) => {
     }
 };
 
+const getHomeData = async (req, res) => {
+    const userId = req.params.id;
+
+    try {
+        // Fetch data from the respective functions
+        const mostFeasibleIdea = await projectModel.getMostFeasibleIdea(userId);
+        const easiestIdea = await projectModel.getEasiestIdea(userId);
+        const mostDifficultIdea = await projectModel.getMostDifficultIdea(userId);
+		const mostImpactfulIdea = await projectModel.getMostImpactfulIdea(userId);
+        const bookmarkedIdeas = await projectModel.getBookmarkedIdeas(userId);
+        const mostRecentPosts = await threadModel.getMostRecentPosts();
+
+        // Aggregate the data into an array
+        const homeData = [
+            { mostFeasibleIdea: mostFeasibleIdea },
+            { easiestIdea: easiestIdea },
+			{ mostDifficulIdea: mostDifficultIdea },
+            { mostImpactfulIdea: mostImpactfulIdea },
+            { bookmarkedIdeas: bookmarkedIdeas },
+            { mostRecentPosts: mostRecentPosts },
+        ];
+
+        res.json(homeData);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
 
 module.exports = {
 	getAllProjects,
@@ -163,4 +192,5 @@ module.exports = {
 	getEasiestIdea,
 	getMostDifficultIdea,
 	getMostImpactfulIdea,
+	getHomeData,
 };

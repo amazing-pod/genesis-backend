@@ -193,6 +193,7 @@ const deleteProject = async ({ id }) => {
 };
 
 // Home Routes
+
 const getMostFeasibleIdea = async (userId) => {
     // Fetch projects with their ideas for the given user
     const projects = await prisma.project.findMany({
