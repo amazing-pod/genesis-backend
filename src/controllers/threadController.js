@@ -81,6 +81,16 @@ const deleteThread = async (req, res) => {
 	}
 };
 
+// Home Routes
+const getMostRecentPosts = async (req, res) => {
+	try {
+		const posts = await threadModel.getMostRecentPosts();
+		res.json(posts);
+	} catch (error) {
+		res.json({ error: error.message });
+	}
+};
+
 module.exports = {
 	getAllThreads,
 	getAllPosts,
@@ -91,4 +101,5 @@ module.exports = {
 	likeThread,
 	unlikeThread,
 	deleteThread,
+	getMostRecentPosts,
 };

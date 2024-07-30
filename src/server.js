@@ -1,3 +1,4 @@
+require('dotenv').config(); // Added because OpenAI API key is not found otherwise
 const express = require("express");
 const app = express();
 const morgan = require("morgan");

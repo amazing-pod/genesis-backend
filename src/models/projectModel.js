@@ -11,6 +11,20 @@ const getAllProjects = async () => {
 	});
 };
 
+// Test function
+const getProjectsByUserId = async (userId) => {
+    return prisma.project.findMany({
+        where: {
+            ownerId: userId,
+        },
+        include: {
+            owner: true,
+            collaborators: true,
+            ideas: true,
+        },
+    });
+};
+
 // const getAccessProjects = async (userId) => {
 // 	return prisma.project.findMany({
 // 		where: {
@@ -178,6 +192,160 @@ const deleteProject = async ({ id }) => {
 	});
 };
 
+// Home Routes
+
+const getMostFeasibleIdea = async (userId) => {
+    // Fetch projects with their ideas for the given user
+    const projects = await prisma.project.findMany({
+        where: {
+            ownerId: userId,
+        },
+        include: {
+            ideas: true,
+        },
+    });
+
+    if (projects.length === 0) {
+        return [];
+    }
+
+	// Get all ideas. flatMap() takes all project ideas and turns it into an array.
+	const ideas = projects.flatMap(project => project.ideas);
+
+    // Sort ideas by feasibility (descending order)
+    ideas.sort((a, b) => b.feasibility - a.feasibility);
+
+    // // Return the most feasible idea
+	if (ideas) {
+		return ideas[0];
+	}
+	return null;
+};
+
+
+const getEasiestIdea = async ( userId ) => {
+	const projects = await prisma.project.findMany({
+        where: {
+            ownerId: userId,
+        },
+        include: {
+            ideas: true,
+        },
+    });
+
+    if (projects.length === 0) {
+        return [];
+    }
+
+	// Get all ideas. flatMap() takes all project ideas and turns it into an array.
+	const ideas = projects.flatMap(project => project.ideas);
+
+    // Sort ideas by feasibility (ascending order)
+    ideas.sort((a, b) => b.difficulty - a.difficulty);
+	
+    // // Return the most feasible idea
+	if (ideas) {
+		return ideas[ideas.length - 1];
+	}
+	return null;
+};
+
+const getMostDifficultIdea = async ( userId ) => {
+	const projects = await prisma.project.findMany({
+        where: {
+            ownerId: userId,
+        },
+        include: {
+            ideas: true,
+        },
+    });
+
+    if (projects.length === 0) {
+        return [];
+    }
+
+	// Get all ideas. flatMap() takes all project ideas and turns it into an array.
+	const ideas = projects.flatMap(project => project.ideas);
+
+    // Sort ideas by feasibility (descending order)
+    ideas.sort((a, b) => b.difficulty - a.difficulty);
+
+    // Return the most feasible idea
+	if (ideas) {
+		return ideas[0];
+	}
+	return null;
+};
+
+const getMostImpactfulIdea = async ( userId ) => {
+	const projects = await prisma.project.findMany({
+        where: {
+            ownerId: userId,
+        },
+        include: {
+            ideas: true,
+        },
+    });
+
+    if (projects.length === 0) {
+        return [];
+    }
+
+	// Get all ideas. flatMap() takes all project ideas and turns it into an array.
+	const ideas = projects.flatMap(project => project.ideas);
+
+    // Sort ideas by feasibility (descending order)
+    ideas.sort((a, b) => b.impact - a.impact);
+
+    // Return the most feasible idea
+	if (ideas) {
+		return ideas[0];
+	}
+	return null;
+};
+
+// const getBookmarkedIdeas = async (userId) => {
+//     return prisma.idea.findMany({
+//         where: {
+//             bookmarked: true,
+//         },
+//     });
+// };
+
+const getBookmarkedIdeas = async (userId) => {
+	const projects = await prisma.project.findMany({
+        where: {
+            ownerId: userId,
+        },
+        include: {
+            ideas: true,
+        },
+    });
+
+    if (projects.length === 0) {
+        return [];
+    }
+
+	// Get all ideas. flatMap() takes all project ideas and turns it into an array.
+	let ideas = projects.flatMap(project => project.ideas);
+
+	if (ideas.length === 0) {
+		return [];
+	}
+
+    // Sort ideas by feasibility (descending order)
+    ideas = ideas.filter((a) => a.bookmarked === true);
+	console.log("ideas filtered:", ideas);
+
+    // Return the most feasible idea
+	return ideas;
+
+
+
+};
+
+
+
 module.exports = {
 	getAllProjects,
 	getProjectById,
@@ -188,4 +356,10 @@ module.exports = {
 	updateIdea,
 	deleteIdea,
 	deleteProject,
+	getBookmarkedIdeas,
+	getProjectsByUserId,
+	getMostFeasibleIdea,
+	getEasiestIdea,
+	getMostDifficultIdea,
+	getMostImpactfulIdea,
 };
