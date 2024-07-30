@@ -17,6 +17,8 @@ router.get("/", getAllThreads);
 router.get("/posts", getAllPosts);
 router.get("/:id/replies", getRepliesByPost);
 router.get("/:id", getThreadById);
+router.get("/mostRecentPosts", getAllThreads);
+
 router.post("/posts", createPost);
 router.post("/", createThread);
 router.put("/:threadId/like/:userId", likeThread);
