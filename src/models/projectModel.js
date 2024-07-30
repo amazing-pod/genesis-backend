@@ -12,17 +12,17 @@ const getAllProjects = async () => {
 };
 
 // Test function
-const getProjectsByUserId = async (userId) => {
-    return prisma.project.findMany({
-        where: {
-            ownerId: userId,
-        },
-        include: {
-            owner: true,
-            collaborators: true,
-            ideas: true,
-        },
-    });
+const getProjectsByUserId = async ({ ownerId }) => {
+	return prisma.project.findMany({
+		where: {
+			ownerId,
+		},
+		include: {
+			owner: true,
+			collaborators: true,
+			ideas: true,
+		},
+	});
 };
 
 // const getAccessProjects = async (userId) => {
@@ -74,10 +74,11 @@ const getIdeaById = async ({ id, ideaId }) => {
 	});
 };
 
-const createProject = async ({ ownerId }) => {
+const createProject = async ({ ownerId, title }) => {
 	return prisma.project.create({
 		data: {
 			ownerId,
+			title,
 		},
 	});
 };
@@ -163,6 +164,36 @@ const updateIdea = async (
 	});
 };
 
+const bookmarkIdea = async ({ id, ideaId }) => {
+	const project = await prisma.project.findUnique({
+		where: {
+			id: id,
+		},
+		include: {
+			ideas: true,
+		},
+	});
+
+	if (!project.ideas.find((idea) => idea.id === ideaId)) {
+		throw new Error(`Idea [${ideaId}] not found in project [${id}]`);
+	}
+
+	const idea = await prisma.project.findUnique({
+		where: {
+			id: id,
+		},
+	});
+
+	return prisma.idea.update({
+		where: {
+			id: ideaId,
+		},
+		data: {
+			bookmarked: !idea.bookmarked,
+		},
+	});
+};
+
 const deleteIdea = async ({ id, ideaId }) => {
 	const project = await prisma.project.findUnique({
 		where: {
@@ -194,157 +225,112 @@ const deleteProject = async ({ id }) => {
 
 // Home Routes
 
-const getMostFeasibleIdea = async (userId) => {
-    // Fetch projects with their ideas for the given user
-    const projects = await prisma.project.findMany({
-        where: {
-            ownerId: userId,
-        },
-        include: {
-            ideas: true,
-        },
-    });
+const getMostFeasibleIdea = async ({ id }) => {
+	const project = await prisma.project.findUnique({
+		where: {
+			id,
+		},
+		include: {
+			ideas: true,
+		},
+	});
 
-    if (projects.length === 0) {
-        return [];
-    }
-
-	// Get all ideas. flatMap() takes all project ideas and turns it into an array.
-	const ideas = projects.flatMap(project => project.ideas);
-
-    // Sort ideas by feasibility (descending order)
-    ideas.sort((a, b) => b.feasibility - a.feasibility);
-
-    // // Return the most feasible idea
-	if (ideas) {
-		return ideas[0];
-	}
-	return null;
-};
-
-
-const getEasiestIdea = async ( userId ) => {
-	const projects = await prisma.project.findMany({
-        where: {
-            ownerId: userId,
-        },
-        include: {
-            ideas: true,
-        },
-    });
-
-    if (projects.length === 0) {
-        return [];
-    }
-
-	// Get all ideas. flatMap() takes all project ideas and turns it into an array.
-	const ideas = projects.flatMap(project => project.ideas);
-
-    // Sort ideas by feasibility (ascending order)
-    ideas.sort((a, b) => b.difficulty - a.difficulty);
-	
-    // // Return the most feasible idea
-	if (ideas) {
-		return ideas[ideas.length - 1];
-	}
-	return null;
-};
-
-const getMostDifficultIdea = async ( userId ) => {
-	const projects = await prisma.project.findMany({
-        where: {
-            ownerId: userId,
-        },
-        include: {
-            ideas: true,
-        },
-    });
-
-    if (projects.length === 0) {
-        return [];
-    }
-
-	// Get all ideas. flatMap() takes all project ideas and turns it into an array.
-	const ideas = projects.flatMap(project => project.ideas);
-
-    // Sort ideas by feasibility (descending order)
-    ideas.sort((a, b) => b.difficulty - a.difficulty);
-
-    // Return the most feasible idea
-	if (ideas) {
-		return ideas[0];
-	}
-	return null;
-};
-
-const getMostImpactfulIdea = async ( userId ) => {
-	const projects = await prisma.project.findMany({
-        where: {
-            ownerId: userId,
-        },
-        include: {
-            ideas: true,
-        },
-    });
-
-    if (projects.length === 0) {
-        return [];
-    }
-
-	// Get all ideas. flatMap() takes all project ideas and turns it into an array.
-	const ideas = projects.flatMap(project => project.ideas);
-
-    // Sort ideas by feasibility (descending order)
-    ideas.sort((a, b) => b.impact - a.impact);
-
-    // Return the most feasible idea
-	if (ideas) {
-		return ideas[0];
-	}
-	return null;
-};
-
-// const getBookmarkedIdeas = async (userId) => {
-//     return prisma.idea.findMany({
-//         where: {
-//             bookmarked: true,
-//         },
-//     });
-// };
-
-const getBookmarkedIdeas = async (userId) => {
-	const projects = await prisma.project.findMany({
-        where: {
-            ownerId: userId,
-        },
-        include: {
-            ideas: true,
-        },
-    });
-
-    if (projects.length === 0) {
-        return [];
-    }
-
-	// Get all ideas. flatMap() takes all project ideas and turns it into an array.
-	let ideas = projects.flatMap(project => project.ideas);
-
-	if (ideas.length === 0) {
+	if (!project.ideas.length) {
 		return [];
 	}
 
-    // Sort ideas by feasibility (descending order)
-    ideas = ideas.filter((a) => a.bookmarked === true);
-	console.log("ideas filtered:", ideas);
+	const ideas = project.ideas;
 
-    // Return the most feasible idea
-	return ideas;
-
-
-
+	if (ideas) {
+		ideas.sort((a, b) => b.feasibility - a.feasibility);
+		return ideas[0];
+	}
+	return null;
 };
 
+const getEasiestIdea = async ({ id }) => {
+	const project = await prisma.project.findUnique({
+		where: {
+			id,
+		},
+		include: {
+			ideas: true,
+		},
+	});
 
+	if (!project.ideas.length) {
+		return [];
+	}
+
+	const ideas = project.ideas;
+
+	if (ideas) {
+		ideas.sort((a, b) => a.difficulty - b.difficulty);
+		return ideas[0];
+	}
+	return null;
+};
+
+const getMostDifficultIdea = async ({ id }) => {
+	const project = await prisma.project.findUnique({
+		where: {
+			id,
+		},
+		include: {
+			ideas: true,
+		},
+	});
+
+	if (!project.ideas.length) {
+		return [];
+	}
+
+	const ideas = project.ideas;
+
+	if (ideas) {
+		ideas.sort((a, b) => b.difficulty - a.difficulty);
+		return ideas[0];
+	}
+	return null;
+};
+
+const getMostImpactfulIdea = async ({ id }) => {
+	const project = await prisma.project.findUnique({
+		where: {
+			id,
+		},
+		include: {
+			ideas: true,
+		},
+	});
+
+	if (!project.ideas.length) {
+		return [];
+	}
+
+	const ideas = project.ideas;
+
+	if (ideas) {
+		ideas.sort((a, b) => b.impact - a.impact);
+		return ideas[0];
+	}
+	return null;
+};
+
+const getBookmarkedIdeas = async ({ id }) => {
+	const ideas = await prisma.idea.findMany({
+		where: {
+			projectId: id,
+			bookmarked: true,
+		},
+	});
+
+	if (!ideas.length) {
+		return [];
+	}
+
+	return ideas;
+};
 
 module.exports = {
 	getAllProjects,
@@ -356,6 +342,7 @@ module.exports = {
 	updateIdea,
 	deleteIdea,
 	deleteProject,
+	bookmarkIdea,
 	getBookmarkedIdeas,
 	getProjectsByUserId,
 	getMostFeasibleIdea,

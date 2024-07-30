@@ -12,14 +12,12 @@ const getAllProjects = async (req, res) => {
 
 // New route to get projects by a specific user
 const getProjectsByUserId = async (req, res) => {
-    try {
-        const userId = req.params.userId;
-        console.log("Extracted userId:", userId);
-        const projects = await projectModel.getProjectsByUserId(userId);
-        res.json(projects);
-    } catch (error) {
-        res.json({ error: error.message });
-    }
+	try {
+		const projects = await projectModel.getProjectsByUserId(req.params);
+		res.json(projects);
+	} catch (error) {
+		res.json({ error: error.message });
+	}
 };
 
 const getProjectById = async (req, res) => {
@@ -77,6 +75,15 @@ const updateIdea = async (req, res) => {
 	}
 };
 
+const bookmarkIdea = async (req, res) => {
+	try {
+		const idea = await projectModel.bookmarkIdea(req.params);
+		res.json(idea);
+	} catch (error) {
+		res.json({ error: error.message });
+	}
+};
+
 const deleteProject = async (req, res) => {
 	try {
 		const project = await projectModel.deleteProject(req.params);
@@ -97,84 +104,79 @@ const deleteIdea = async (req, res) => {
 
 // Home Routes:
 const getMostFeasibleIdea = async (req, res) => {
-	const userId = req.params.id;
 	try {
-		const idea = await projectModel.getMostFeasibleIdea(userId);
-		console.log(idea);
+		const idea = await projectModel.getMostFeasibleIdea(req.params);
 		res.json(idea);
 	} catch (error) {
 		res.json({ error: error.message });
 	}
-}
+};
 
 const getEasiestIdea = async (req, res) => {
-	const userId = req.params.id;
 	try {
-		const idea = await projectModel.getEasiestIdea(userId);
+		const idea = await projectModel.getEasiestIdea(req.params);
 		res.json(idea);
 	} catch (error) {
 		res.json({ error: error.message });
 	}
-}
+};
 
 const getMostDifficultIdea = async (req, res) => {
-	const userId = req.params.id;
 	try {
-		const idea = await projectModel.getMostDifficultIdea(userId);
+		const idea = await projectModel.getMostDifficultIdea(req.params);
 		res.json(idea);
 	} catch (error) {
 		res.json({ error: error.message });
 	}
-}
+};
 
 const getMostImpactfulIdea = async (req, res) => {
-	const userId = req.params.id;
 	try {
-		const idea = await projectModel.getMostImpactfulIdea(userId);
+		const idea = await projectModel.getMostImpactfulIdea(req.params);
 		res.json(idea);
 	} catch (error) {
 		res.json({ error: error.message });
 	}
-}
+};
 
 const getBookmarkedIdeas = async (req, res) => {
-    try {
-        const userId = req.params.id;
-        const bookmarkedIdeas = await projectModel.getBookmarkedIdeas(userId);
-        res.json(bookmarkedIdeas);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
+	try {
+		const bookmarkedIdeas = await projectModel.getBookmarkedIdeas(req.params);
+		res.json(bookmarkedIdeas);
+	} catch (error) {
+		res.status(500).json({ error: error.message });
+	}
 };
 
 const getHomeData = async (req, res) => {
-    const userId = req.params.id;
+	try {
+		// Fetch data from the respective functions
+		const mostFeasibleIdea = await projectModel.getMostFeasibleIdea(req.params);
+		const easiestIdea = await projectModel.getEasiestIdea(req.params);
+		const mostDifficultIdea = await projectModel.getMostDifficultIdea(
+			req.params
+		);
+		const mostImpactfulIdea = await projectModel.getMostImpactfulIdea(
+			req.params
+		);
+		const bookmarkedIdeas = await projectModel.getBookmarkedIdeas(req.params);
+		const mostRecentPosts = await threadModel.getMostRecentPosts();
 
-    try {
-        // Fetch data from the respective functions
-        const mostFeasibleIdea = await projectModel.getMostFeasibleIdea(userId);
-        const easiestIdea = await projectModel.getEasiestIdea(userId);
-        const mostDifficultIdea = await projectModel.getMostDifficultIdea(userId);
-		const mostImpactfulIdea = await projectModel.getMostImpactfulIdea(userId);
-        const bookmarkedIdeas = await projectModel.getBookmarkedIdeas(userId);
-        const mostRecentPosts = await threadModel.getMostRecentPosts();
-
-        // Aggregate the data into an array
-        const homeData = [
-            { mostFeasibleIdea: mostFeasibleIdea },
-            { easiestIdea: easiestIdea },
+		// Aggregate the data into an array
+		const homeData = [
+			{ mostFeasibleIdea: mostFeasibleIdea },
+			{ easiestIdea: easiestIdea },
 			{ mostDifficulIdea: mostDifficultIdea },
-            { mostImpactfulIdea: mostImpactfulIdea },
-            { bookmarkedIdeas: bookmarkedIdeas },
-            { mostRecentPosts: mostRecentPosts },
-        ];
+			{ mostImpactfulIdea: mostImpactfulIdea },
+			{ bookmarkedIdeas: bookmarkedIdeas },
+			{ mostRecentPosts: mostRecentPosts },
+		];
 
-        res.json(homeData);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
+		res.json(homeData);
+	} catch (error) {
+		res.status(500).json({ error: error.message });
+	}
 };
-
 
 module.exports = {
 	getAllProjects,
@@ -186,6 +188,7 @@ module.exports = {
 	updateIdea,
 	deleteProject,
 	deleteIdea,
+	bookmarkIdea,
 	getBookmarkedIdeas,
 	getProjectsByUserId,
 	getMostFeasibleIdea,
