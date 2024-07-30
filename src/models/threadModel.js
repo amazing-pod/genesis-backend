@@ -204,6 +204,9 @@ const deleteThread = async ({ id }) => {
 		where: {
 			id,
 		},
+		include: {
+			replies: true,
+		},
 	});
 
 	if (thread.replyToId === null) {
@@ -213,14 +216,22 @@ const deleteThread = async ({ id }) => {
 			},
 		});
 	} else {
-		return prisma.thread.update({
-			where: {
-				id,
-			},
-			data: {
-				deleted: !thread.deleted,
-			},
-		});
+		if (thread.replies.length) {
+			return prisma.thread.update({
+				where: {
+					id,
+				},
+				data: {
+					deleted: !thread.deleted,
+				},
+			});
+		} else {
+			return prisma.thread.delete({
+				where: {
+					id,
+				},
+			});
+		}
 	}
 };
 
