@@ -121,7 +121,7 @@ const createIdea = async (
 			issues,
 			features,
 			tags: {
-				connectOrCreate: tags.map((tag) => {
+				connectOrCreate: tags?.map((tag) => {
 					return {
 						where: { name: tag.name },
 						create: { name: tag.name },
@@ -133,6 +133,36 @@ const createIdea = async (
 			difficulty,
 		},
 	});
+};
+
+const bulkCreateIdeas = async ({ id }, { ideas }) => {
+	const createdIdeas = [];
+
+	for (const idea of ideas) {
+		const createdIdea = await prisma.idea.create({
+			data: {
+				projectId: id,
+				title: idea.title,
+				description: idea.description,
+				category: idea.category,
+				issues: idea.issues,
+				features: idea.features,
+				tags: {
+					connectOrCreate: idea.tags?.map((tag) => ({
+						where: { name: tag },
+						create: { name: tag },
+					})),
+				},
+				impact: idea.impact,
+				feasibility: idea.feasibility,
+				difficulty: idea.difficulty,
+			},
+		});
+
+		createdIdeas.push(createdIdea);
+	}
+
+	return createdIdeas;
 };
 
 const updateIdea = async (
@@ -339,6 +369,7 @@ module.exports = {
 	createProject,
 	addCollaborator,
 	createIdea,
+	bulkCreateIdeas,
 	updateIdea,
 	deleteIdea,
 	deleteProject,

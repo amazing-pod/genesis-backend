@@ -57,8 +57,8 @@ model Idea {
   title          String
   description    String
   category       IdeaCategory
-  issues         String[]
-  features       String[]
+  issues         String[] @default([])
+  features       String[] @default([])
   tags           Tag[]        @relation("IdeaTags")
   impact         Int          @default(0)
   feasibility    Int          @default(0)

@@ -66,6 +66,15 @@ const createIdea = async (req, res) => {
 	}
 };
 
+const bulkCreateIdeas = async (req, res) => {
+	try {
+		const ideas = await projectModel.bulkCreateIdeas(req.params, req.body);
+		res.json(ideas);
+	} catch (error) {
+		res.json({ error: error.message });
+	}
+};
+
 const updateIdea = async (req, res) => {
 	try {
 		const idea = await projectModel.updateIdea(req.params, req.body);
@@ -185,6 +194,7 @@ module.exports = {
 	createProject,
 	addCollaborator,
 	createIdea,
+	bulkCreateIdeas,
 	updateIdea,
 	deleteProject,
 	deleteIdea,
