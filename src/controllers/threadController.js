@@ -91,6 +91,15 @@ const getMostRecentPosts = async (req, res) => {
 	}
 };
 
+const deleteReply = async (req, res) => {
+    try {
+        const reply = await threadModel.deleteReply(req.params);
+        res.json(reply);
+    } catch (error) {
+        res.json({ error: error.message });
+    }
+};
+
 module.exports = {
 	getAllThreads,
 	getAllPosts,
@@ -102,4 +111,5 @@ module.exports = {
 	unlikeThread,
 	deleteThread,
 	getMostRecentPosts,
+	deleteReply,
 };

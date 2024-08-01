@@ -236,6 +236,14 @@ const deleteThread = async ({ id }) => {
 	}
 };
 
+const deleteReply = async ({ id }) => {
+    return prisma.thread.delete({
+        where: {
+            id,
+        },
+    });
+};
+
 // Home-Specific Routes
 const getMostRecentPosts = async () => {
     try {
@@ -267,4 +275,5 @@ module.exports = {
 	unlikeThread,
 	deleteThread,
 	getMostRecentPosts,
+	deleteReply,
 };
