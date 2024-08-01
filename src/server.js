@@ -1,4 +1,4 @@
-require('dotenv').config(); // Added because OpenAI API key is not found otherwise
+require("dotenv").config(); // Added because OpenAI API key is not found otherwise
 const express = require("express");
 const app = express();
 const morgan = require("morgan");
@@ -13,7 +13,7 @@ const projectRoutes = require("./routes/projectRoutes");
 app.use(morgan("dev"));
 app.use(cors());
 app.use(express.json());
-app.use(limiter);
+// app.use(limiter);
 
 app.get("/", (req, res) => {
 	res.send("Hello World");
