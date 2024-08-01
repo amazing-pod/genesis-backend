@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Idea" ALTER COLUMN "issues" SET DEFAULT ARRAY[]::TEXT[],
+ALTER COLUMN "features" SET DEFAULT ARRAY[]::TEXT[];

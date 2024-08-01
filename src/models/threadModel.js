@@ -118,6 +118,26 @@ const createThread = async ({ authorId, content, replyToId }) => {
 			category: thread.category,
 			tags: thread.tags,
 		},
+		include: {
+			author: {
+				include: {
+					profile: true,
+				},
+			},
+			likedBy: true,
+			replies: {
+				include: {
+					author: {
+						include: {
+							profile: true,
+						},
+					},
+					likedBy: true,
+					replies: true,
+				},
+			},
+			tags: true,
+		},
 	});
 };
 
@@ -198,6 +218,9 @@ const deleteThread = async ({ id }) => {
 		where: {
 			id,
 		},
+		include: {
+			replies: true,
+		},
 	});
 
 	if (thread.replyToId === null) {
@@ -207,16 +230,44 @@ const deleteThread = async ({ id }) => {
 			},
 		});
 	} else {
-		return prisma.thread.update({
-			where: {
-				id,
-			},
-			data: {
-				deleted: !thread.deleted,
-			},
-		});
+		if (thread.replies.length) {
+			return prisma.thread.update({
+				where: {
+					id,
+				},
+				data: {
+					deleted: !thread.deleted,
+				},
+			});
+		} else {
+			return prisma.thread.delete({
+				where: {
+					id,
+				},
+			});
+		}
 	}
 };
+
+// Home-Specific Routes
+const getMostRecentPosts = async () => {
+    try {
+        // Fetch the two most recent threads
+        const recentThreads = await prisma.thread.findMany({
+            orderBy: {
+                createdAt: 'desc',
+            },
+            take: 2, // Limit the result to 2 threads
+        });
+
+        return recentThreads;
+    } catch (error) {
+        console.error("Error fetching recent threads:", error);
+        throw new Error("Unable to fetch recent threads.");
+    }
+
+};
+
 
 module.exports = {
 	getAllThreads,
@@ -228,4 +279,5 @@ module.exports = {
 	likeThread,
 	unlikeThread,
 	deleteThread,
+	getMostRecentPosts,
 };

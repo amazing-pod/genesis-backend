@@ -11,6 +11,20 @@ const getAllProjects = async () => {
 	});
 };
 
+// Test function
+const getProjectsByUserId = async ({ ownerId }) => {
+	return prisma.project.findMany({
+		where: {
+			ownerId,
+		},
+		include: {
+			owner: true,
+			collaborators: true,
+			ideas: true,
+		},
+	});
+};
+
 // const getAccessProjects = async (userId) => {
 // 	return prisma.project.findMany({
 // 		where: {
@@ -60,10 +74,11 @@ const getIdeaById = async ({ id, ideaId }) => {
 	});
 };
 
-const createProject = async ({ ownerId }) => {
+const createProject = async ({ ownerId, title }) => {
 	return prisma.project.create({
 		data: {
 			ownerId,
+			title,
 		},
 	});
 };
@@ -106,7 +121,7 @@ const createIdea = async (
 			issues,
 			features,
 			tags: {
-				connectOrCreate: tags.map((tag) => {
+				connectOrCreate: tags?.map((tag) => {
 					return {
 						where: { name: tag.name },
 						create: { name: tag.name },
@@ -118,6 +133,36 @@ const createIdea = async (
 			difficulty,
 		},
 	});
+};
+
+const bulkCreateIdeas = async ({ id }, { ideas }) => {
+	const createdIdeas = [];
+
+	for (const idea of ideas) {
+		const createdIdea = await prisma.idea.create({
+			data: {
+				projectId: id,
+				title: idea.title,
+				description: idea.description,
+				category: idea.category,
+				issues: idea.issues,
+				features: idea.features,
+				tags: {
+					connectOrCreate: idea.tags?.map((tag) => ({
+						where: { name: tag },
+						create: { name: tag },
+					})),
+				},
+				impact: idea.impact,
+				feasibility: idea.feasibility,
+				difficulty: idea.difficulty,
+			},
+		});
+
+		createdIdeas.push(createdIdea);
+	}
+
+	return createdIdeas;
 };
 
 const updateIdea = async (
@@ -145,6 +190,36 @@ const updateIdea = async (
 			impact,
 			feasibility,
 			difficulty,
+		},
+	});
+};
+
+const bookmarkIdea = async ({ id, ideaId }) => {
+	const project = await prisma.project.findUnique({
+		where: {
+			id: id,
+		},
+		include: {
+			ideas: true,
+		},
+	});
+
+	if (!project.ideas.find((idea) => idea.id === ideaId)) {
+		throw new Error(`Idea [${ideaId}] not found in project [${id}]`);
+	}
+
+	const idea = await prisma.project.findUnique({
+		where: {
+			id: id,
+		},
+	});
+
+	return prisma.idea.update({
+		where: {
+			id: ideaId,
+		},
+		data: {
+			bookmarked: !idea.bookmarked,
 		},
 	});
 };
@@ -178,6 +253,115 @@ const deleteProject = async ({ id }) => {
 	});
 };
 
+// Home Routes
+
+const getMostFeasibleIdea = async ({ id }) => {
+	const project = await prisma.project.findUnique({
+		where: {
+			id,
+		},
+		include: {
+			ideas: true,
+		},
+	});
+
+	if (!project.ideas.length) {
+		return [];
+	}
+
+	const ideas = project.ideas;
+
+	if (ideas) {
+		ideas.sort((a, b) => b.feasibility - a.feasibility);
+		return ideas[0];
+	}
+	return null;
+};
+
+const getEasiestIdea = async ({ id }) => {
+	const project = await prisma.project.findUnique({
+		where: {
+			id,
+		},
+		include: {
+			ideas: true,
+		},
+	});
+
+	if (!project.ideas.length) {
+		return [];
+	}
+
+	const ideas = project.ideas;
+
+	if (ideas) {
+		ideas.sort((a, b) => a.difficulty - b.difficulty);
+		return ideas[0];
+	}
+	return null;
+};
+
+const getMostDifficultIdea = async ({ id }) => {
+	const project = await prisma.project.findUnique({
+		where: {
+			id,
+		},
+		include: {
+			ideas: true,
+		},
+	});
+
+	if (!project.ideas.length) {
+		return [];
+	}
+
+	const ideas = project.ideas;
+
+	if (ideas) {
+		ideas.sort((a, b) => b.difficulty - a.difficulty);
+		return ideas[0];
+	}
+	return null;
+};
+
+const getMostImpactfulIdea = async ({ id }) => {
+	const project = await prisma.project.findUnique({
+		where: {
+			id,
+		},
+		include: {
+			ideas: true,
+		},
+	});
+
+	if (!project.ideas.length) {
+		return [];
+	}
+
+	const ideas = project.ideas;
+
+	if (ideas) {
+		ideas.sort((a, b) => b.impact - a.impact);
+		return ideas[0];
+	}
+	return null;
+};
+
+const getBookmarkedIdeas = async ({ id }) => {
+	const ideas = await prisma.idea.findMany({
+		where: {
+			projectId: id,
+			bookmarked: true,
+		},
+	});
+
+	if (!ideas.length) {
+		return [];
+	}
+
+	return ideas;
+};
+
 module.exports = {
 	getAllProjects,
 	getProjectById,
@@ -185,7 +369,15 @@ module.exports = {
 	createProject,
 	addCollaborator,
 	createIdea,
+	bulkCreateIdeas,
 	updateIdea,
 	deleteIdea,
 	deleteProject,
+	bookmarkIdea,
+	getBookmarkedIdeas,
+	getProjectsByUserId,
+	getMostFeasibleIdea,
+	getEasiestIdea,
+	getMostDifficultIdea,
+	getMostImpactfulIdea,
 };
