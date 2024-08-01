@@ -10,6 +10,7 @@ const {
 	addCollaborator,
 	deleteProject,
 	deleteIdea,
+	addFeatureToIdea,
 	bookmarkIdea,
 	getBookmarkedIdeas,
 	getProjectsByUserId,
@@ -26,7 +27,8 @@ router.get("/:id/ideas/:ideaId", getIdeaById);
 router.post("/", createProject);
 router.post("/:id/ideas", createIdea);
 router.post("/:id/ideas/bulk", bulkCreateIdeas);
-router.put("/:id/ideas/:ideaId", bookmarkIdea);
+router.put("/:id/ideas/:ideaId/bookmark", bookmarkIdea);
+router.put("/:id/ideas/:ideaId/features", addFeatureToIdea);
 router.put("/collaborators", addCollaborator);
 router.delete("/:id", deleteProject);
 router.delete("/:id/ideas/:ideaId", deleteIdea);

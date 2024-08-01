@@ -165,10 +165,29 @@ const bulkCreateIdeas = async ({ id }, { ideas }) => {
 	return createdIdeas;
 };
 
-const updateIdea = async (
-	{ id, ideaId },
-	{ impact, feasibility, difficulty }
-) => {
+const updateIdea = async ({ id, ideaId }, data) => {
+	const project = await prisma.project.findUnique({
+		where: {
+			id: id,
+		},
+		include: {
+			ideas: true,
+		},
+	});
+
+	if (!project.ideas.find((idea) => idea.id === ideaId)) {
+		throw new Error(`Idea [${ideaId}] not found in project [${id}]`);
+	}
+
+	return prisma.idea.update({
+		where: {
+			id: ideaId,
+		},
+		data: data,
+	});
+};
+
+const addFeatureToIdea = async ({ id, ideaId }, { feature }) => {
 	const project = await prisma.project.findUnique({
 		where: {
 			id: id,
@@ -187,9 +206,9 @@ const updateIdea = async (
 			id: ideaId,
 		},
 		data: {
-			impact,
-			feasibility,
-			difficulty,
+			features: {
+				push: feature,
+			},
 		},
 	});
 };
@@ -371,6 +390,7 @@ module.exports = {
 	createIdea,
 	bulkCreateIdeas,
 	updateIdea,
+	addFeatureToIdea,
 	deleteIdea,
 	deleteProject,
 	bookmarkIdea,
