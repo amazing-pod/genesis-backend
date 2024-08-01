@@ -12,10 +12,11 @@
 	"license": "ISC",
 	"devDependencies": {
 		"morgan": "^1.10.0",
-		"nodemon": "^3.1.4"
+		"nodemon": "^3.1.4",
+		"prisma": "^5.17.0"
 	},
 	"dependencies": {
-		"@prisma/client": "^5.16.2",
+		"@prisma/client": "^5.17.0",
 		"bcrypt": "^5.1.1",
 		"cors": "^2.8.5",
 		"dotenv": "^16.4.5",
@@ -24,7 +25,6 @@
 		"jsonwebtoken": "^9.0.2",
 		"openai": "^4.52.7",
 		"pg": "^8.12.0",
-		"prisma": "^5.16.2",
 		"svix": "^1.25.0"
 	}
 }
