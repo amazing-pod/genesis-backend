@@ -142,76 +142,63 @@ const createThread = async ({ authorId, content, replyToId }) => {
 };
 
 const likeThread = async ({ threadId, userId }) => {
-	const thread = await prisma.thread.findUnique({
-		where: {
-			id: threadId,
-		},
-		include: {
-			likedBy: true,
-		},
-	});
+    const thread = await prisma.thread.findUnique({
+        where: {
+            id: threadId,
+        },
+        include: {
+            likedBy: true,
+        },
+    });
 
-	if (thread.likedBy.find((user) => user.id === userId)) {
-		throw new Error(`User [${userId}] already liked thread [${threadId}]`);
-	}
+    if (thread.likedBy.some((user) => user.id === userId)) {
+        throw new Error(`User [${userId}] has already liked thread [${threadId}]`);
+    }
 
-	return prisma.thread.update({
-		where: {
-			id: threadId,
-		},
-		data: {
-			likeCount: {
-				increment: 1,
-			},
-			likedBy: {
-				connect: { id: userId },
-			},
-		},
-	});
+    return prisma.thread.update({
+        where: {
+            id: threadId,
+        },
+        data: {
+            likeCount: {
+                increment: 1,
+            },
+            likedBy: {
+                connect: { id: userId },
+            },
+        },
+    });
 };
 
 const unlikeThread = async ({ threadId, userId }) => {
-	const thread = await prisma.thread.findUnique({
-	  where: {
-		id: threadId,
-	  },
-	  include: {
-		likedBy: true,
-	  },
-	});
-  
-	if (!thread.likedBy.find((user) => user.id === userId)) {
-	  throw new Error(`User [${userId}] has not liked thread [${threadId}]`);
-	}
-  
-	if (thread.likeCount > 0) {
-	  return prisma.thread.update({
-		where: {
-		  id: threadId,
-		},
-		data: {
-		  likeCount: {
-			decrement: 1,
-		  },
-		  likedBy: {
-			disconnect: { id: userId },
-		  },
-		},
-	  });
-	} else {
-	  return prisma.thread.update({
-		where: {
-		  id: threadId,
-		},
-		data: {
-		  likedBy: {
-			disconnect: { id: userId },
-		  },
-		},
-	  });
-	}
-  };
-  
+    const thread = await prisma.thread.findUnique({
+        where: {
+            id: threadId,
+        },
+        include: {
+            likedBy: true,
+        },
+    });
+
+    if (!thread.likedBy.some((user) => user.id === userId)) {
+        throw new Error(`User [${userId}] has not liked thread [${threadId}]`);
+    }
+
+    return prisma.thread.update({
+        where: {
+            id: threadId,
+        },
+        data: {
+            likeCount: {
+                decrement: 1,
+            },
+            likedBy: {
+                disconnect: { id: userId },
+            },
+        },
+    });
+};
+
 
 const deleteThread = async ({ id }) => {
 	const thread = await prisma.thread.findUnique({
