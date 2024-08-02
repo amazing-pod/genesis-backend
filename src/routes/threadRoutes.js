@@ -11,6 +11,7 @@ const {
 	unlikeThread,
 	deleteThread,
 	getMostRecentPosts,
+	deleteReply,
 } = require("../controllers/threadController");
 
 router.get("/", getAllThreads);
@@ -22,6 +23,7 @@ router.post("/", createThread);
 router.put("/:threadId/like/:userId", likeThread);
 router.put("/:threadId/unlike/:userId", unlikeThread);
 router.delete("/:id", deleteThread);
+router.delete("/replies/:id", deleteReply);
 
 // Home-specific routes
 router.get("/posts/mostRecentPosts", getMostRecentPosts);
