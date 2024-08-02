@@ -41,7 +41,9 @@ const getIdeaById = async (req, res) => {
 
 const createProject = async (req, res) => {
 	try {
-		const project = await projectModel.createProject(req.body);
+		const { ownerId, title } = req.body;
+		console.log(ownerId);
+		const project = await projectModel.createProject({ ownerId, title });	
 		res.json(project);
 	} catch (error) {
 		res.json({ error: error.message });

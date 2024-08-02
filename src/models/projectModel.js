@@ -77,6 +77,7 @@ const getIdeaById = async ({ id, ideaId }) => {
 const createProject = async ({ ownerId, title }) => {
 	return prisma.project.create({
 		data: {
+			id: ownerId,
 			ownerId,
 			title,
 		},
