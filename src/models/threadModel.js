@@ -142,63 +142,62 @@ const createThread = async ({ authorId, content, replyToId }) => {
 };
 
 const likeThread = async ({ threadId, userId }) => {
-    const thread = await prisma.thread.findUnique({
-        where: {
-            id: threadId,
-        },
-        include: {
-            likedBy: true,
-        },
-    });
+	const thread = await prisma.thread.findUnique({
+		where: {
+			id: threadId,
+		},
+		include: {
+			likedBy: true,
+		},
+	});
 
-    if (thread.likedBy.some((user) => user.id === userId)) {
-        throw new Error(`User [${userId}] has already liked thread [${threadId}]`);
-    }
+	if (thread.likedBy.some((user) => user.id === userId)) {
+		throw new Error(`User [${userId}] has already liked thread [${threadId}]`);
+	}
 
-    return prisma.thread.update({
-        where: {
-            id: threadId,
-        },
-        data: {
-            likeCount: {
-                increment: 1,
-            },
-            likedBy: {
-                connect: { id: userId },
-            },
-        },
-    });
+	return prisma.thread.update({
+		where: {
+			id: threadId,
+		},
+		data: {
+			likeCount: {
+				increment: 1,
+			},
+			likedBy: {
+				connect: { id: userId },
+			},
+		},
+	});
 };
 
 const unlikeThread = async ({ threadId, userId }) => {
-    const thread = await prisma.thread.findUnique({
-        where: {
-            id: threadId,
-        },
-        include: {
-            likedBy: true,
-        },
-    });
+	const thread = await prisma.thread.findUnique({
+		where: {
+			id: threadId,
+		},
+		include: {
+			likedBy: true,
+		},
+	});
 
-    if (!thread.likedBy.some((user) => user.id === userId)) {
-        throw new Error(`User [${userId}] has not liked thread [${threadId}]`);
-    }
+	if (!thread.likedBy.some((user) => user.id === userId)) {
+		throw new Error(`User [${userId}] has not liked thread [${threadId}]`);
+	}
 
-    return prisma.thread.update({
-        where: {
-            id: threadId,
-        },
-        data: {
-            likeCount: {
-                decrement: 1,
-            },
-            likedBy: {
-                disconnect: { id: userId },
-            },
-        },
-    });
+	return prisma.thread.update({
+		where: {
+			id: threadId,
+		},
+		data: {
+			likeCount: {
+				decrement: 1,
+			},
+			likedBy: {
+				disconnect: { id: userId },
+			},
+		},
+	});
 };
-
 
 const deleteThread = async ({ id }) => {
 	const thread = await prisma.thread.findUnique({
@@ -279,23 +278,27 @@ const deleteReply = async ({ id }) => {
 
 // Home-Specific Routes
 const getMostRecentPosts = async () => {
-    try {
-        // Fetch the two most recent threads
-        const recentThreads = await prisma.thread.findMany({
-            orderBy: {
-                createdAt: 'desc',
-            },
-            take: 2, // Limit the result to 2 threads
-        });
+	try {
+		// Fetch the two most recent threads
+		const recentThreads = await prisma.thread.findMany({
+			where: {
+				replyToId: null,
+			},
+			orderBy: {
+				createdAt: "desc",
+			},
+			take: 2, // Limit the result to 2 threads
+			include: {
+				likedBy: true,
+			},
+		});
 
-        return recentThreads;
-    } catch (error) {
-        console.error("Error fetching recent threads:", error);
-        throw new Error("Unable to fetch recent threads.");
-    }
-
+		return recentThreads;
+	} catch (error) {
+		console.error("Error fetching recent threads:", error);
+		throw new Error("Unable to fetch recent threads.");
+	}
 };
-
 
 module.exports = {
 	getAllThreads,
