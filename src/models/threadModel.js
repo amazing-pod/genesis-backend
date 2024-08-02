@@ -236,12 +236,45 @@ const deleteThread = async ({ id }) => {
 	}
 };
 
+// const deleteReply = async ({ id }) => {
+//     return prisma.thread.delete({
+//         where: {
+//             id,
+//         },
+//     });
+// };
+
 const deleteReply = async ({ id }) => {
-    return prisma.thread.delete({
-        where: {
-            id,
-        },
-    });
+	const thread = await prisma.thread.findUnique({
+		where: {
+			id,
+		},
+	});
+
+	if (thread.replyToId === null) {
+		return prisma.thread.delete({
+			where: {
+				id,
+			},
+		});
+	} else {
+		if (thread.replies.length) {
+			return prisma.thread.update({
+				where: {
+					id,
+				},
+				data: {
+					deleted: !thread.deleted,
+				},
+			});
+		} else {
+			return prisma.thread.delete({
+				where: {
+					id,
+				},
+			});
+		}
+	}
 };
 
 // Home-Specific Routes
