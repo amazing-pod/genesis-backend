@@ -289,6 +289,11 @@ const getMostRecentPosts = async () => {
 			},
 			take: 2, // Limit the result to 2 threads
 			include: {
+				author: {
+					include: {
+						profile: true,
+					},
+				},
 				likedBy: true,
 			},
 		});
