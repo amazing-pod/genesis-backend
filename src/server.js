@@ -26,5 +26,5 @@ app.use("/projects", projectRoutes);
 app.use("/api/chat", chatRoutes);
 
 app.listen(PORT, () => {
-	console.log(`Server running at PORT: ${PORT}`);
+
 });

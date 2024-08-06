@@ -22,7 +22,6 @@ const getProjectsByUserId = async (req, res) => {
 
 const getProjectById = async (req, res) => {
 	try {
-		console.log("ID", req.params);
 		const project = await projectModel.getProjectById(req.params);
 		res.json(project);
 	} catch (error) {

@@ -57,7 +57,6 @@ const register = async (req, res) => {
 			"svix-signature": svix_signature,
 		});
 	} catch (error) {
-		console.log("Error verifying webhook:", error.message);
 		return res.json({
 			success: false,
 			message: error.message,
@@ -67,8 +66,6 @@ const register = async (req, res) => {
 	const { id, username, first_name, last_name, profile_image_url } = event.data;
 	const email = event.data.email_addresses[0].email_address;
 	const eventType = event.type;
-	console.log(`Webhook type: ${eventType}`);
-	console.log("Webhook body:", event.data);
 
 	try {
 		const user = await userModel.createUser(
@@ -79,7 +76,6 @@ const register = async (req, res) => {
 			last_name,
 			profile_image_url
 		);
-		console.log("User created");
 		return res.json({
 			success: true,
 			message: "Webhook received",
@@ -115,7 +111,6 @@ const deleteUser = async (req, res) => {
 			"svix-signature": svix_signature,
 		});
 	} catch (error) {
-		console.log("Error verifying webhook:", error.message);
 		return res.json({
 			success: false,
 			message: error.message,
@@ -124,12 +119,9 @@ const deleteUser = async (req, res) => {
 
 	const { id } = event.data;
 	const eventType = event.type;
-	console.log(`Webhook type: ${eventType}`);
-	console.log("Webhook body:", event.data);
 
 	try {
 		const user = await userModel.deleteUser(id);
-		console.log("User deleted");
 		return res.json({
 			success: true,
 			message: "Webhook received",
