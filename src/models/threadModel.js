@@ -72,7 +72,17 @@ const getThreadById = async ({ id }) => {
 						},
 					},
 					likedBy: true,
-					replies: true,
+					replies: {
+						include: {
+							author: {
+								include: {
+									profile: true,
+								},
+							},
+							likedBy: true,
+							replies: true,
+						},
+					},
 				},
 			},
 			tags: true,
